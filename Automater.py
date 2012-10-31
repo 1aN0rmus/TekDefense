@@ -84,15 +84,34 @@ def start(argv):
 '''      
       
       
-ipInput = (raw_input('Please enter an IP address to be queried: '))
+#ipInput = (raw_input('Please enter an IP address to be queried: '))
 
-def main():
-    #usage()
-    robtex(ipInput)
-    ipvoid(ipInput)
-    fortiURL(ipInput)
+def main():   
+    if len(sys.argv) < 2:
+        usage()
+        sys.exit()
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "h,t,o")
+    except getopt.GetoptError, err:
+        print str(err)
+        usage()
+        sys.exit(2)
+    for op, a in opts:
+        if op in ("-h","--help"):
+            usage()
+            sys.exit()
+        elif op in '"-t", "--target"':
+            ipInput1 = str(args)
+            ipInput = ipInput1[2:-2]
+            robtex(ipInput)
+            ipvoid(ipInput)
+            fortiURL(ipInput)
+        else:
+            assert False, "unhandled option"
+            
+    
 
-def robtex(ipInput):    
+def robtex(ipInput):   
     h1 = httplib2.Http(".cache")
     resp, content1 = h1.request(("http://robtex.com/" + ipInput), "GET")
     content1String = (str(content1))
@@ -202,6 +221,7 @@ http://www.mxtoolbox.com/SuperTool.aspx?action=blacklist%3a188.95.52.162
 
 if __name__ == "__main__":
     main()
+    
 #     try: start(sys.argv[1:])
 #    except KeyboardInterrupt:
 #        print "Search interrupted by user.."
