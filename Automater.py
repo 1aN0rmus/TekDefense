@@ -28,23 +28,25 @@ To do:
 -output to file
 -******* Fix IPvoid for IP's that haven't been scanned previously. ********
 -Add URL support
--Add command options/arguments
+-Add command options/arguments (-t and -h work, working on the others)
 -add nmap option
 -pretty up
 -Add malwaredomainlist checker
 -more blacklist sources
+-timeout function
 '''
 
 #urlInput = "tekdefense.com"
 def usage():
     print '''
-    This does not work yet, just a placeholder 
+    ONLY -t AND -h WORK CURRENTLY!! 
     -t: target ip or url.  URL must include http://
     -s: source engine (robtex, ipvoid, fortiguard)
     -a: all engines
     -h: help
     -f: import a file of IPs and/or URLs
     -o: output results to file
+    -i: Interactive Mode
     Examples:
     ./Automater.py -t 123.123.123.123 -a -o result.txt
     ./Automater.py -f hosts.txt -s robtex -o results.txt
@@ -61,37 +63,17 @@ def start(argv):
     except getopt.GetoptError:
                usage()
         sys.exit()
-'''
-
-'''
-    try:
-        opts, args = getopt.getopt(argv, "h:d", ["Help", "ipInput="])
-    except getopt.GetoptError:
-        usage()
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt in ("-h", "--help"):
-            usage()
-            sys.exit()
-        elif opt == '-d':
-            ipInput = arg
-            
-        source = "".join(args)
-
-        p = Automater(ipInput, source)
-              
-        print p.output()
-'''      
+'''    
       
       
 #ipInput = (raw_input('Please enter an IP address to be queried: '))
 
 def main():   
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         usage()
         sys.exit()
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "h,t,o")
+        opts, args = getopt.getopt(sys.argv[1:], "h,t,o,s")
     except getopt.GetoptError, err:
         print str(err)
         usage()
@@ -106,6 +88,18 @@ def main():
             robtex(ipInput)
             ipvoid(ipInput)
             fortiURL(ipInput)
+        #Need to work on this a bit more, but on the right track.
+        elif op in '"-s"':
+            engine1 = str(args)
+            engine = engine1[2:-2]
+            if engine == "robtex":
+                robtex(ipInput)
+            elif engine == "ipvoid":
+                ipvoid(ipInput)
+            elif engine == "fortiurl":
+                fortiURL(ipInput)
+            else:
+                assert False, "not an engine, try robtex, ipvoid, or fortiurl"
         else:
             assert False, "unhandled option"
             
