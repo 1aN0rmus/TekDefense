@@ -73,21 +73,23 @@ def main():
         usage()
         sys.exit()
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "h,t,o,s")
+        opts, args = getopt.getopt(sys.argv[1:], "t,o,sa,f,h")
     except getopt.GetoptError, err:
         print str(err)
         usage()
         sys.exit(2)
     for op, a in opts:
+        print op
+        print args
         if op in ("-h","--help"):
             usage()
             sys.exit()
         elif op in '"-t", "--target"':
-            ipInput1 = str(args)
-            ipInput = ipInput1[2:-2]
-            robtex(ipInput)
-            ipvoid(ipInput)
-            fortiURL(ipInput)
+            for i in args:    
+                ipInput = str(i)
+                robtex(ipInput)
+                ipvoid(ipInput)
+                fortiURL(ipInput)
         #Need to work on this a bit more, but on the right track.
         elif op in '"-s"':
             engine1 = str(args)
