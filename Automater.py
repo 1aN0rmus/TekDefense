@@ -23,8 +23,8 @@ To do:
 -Filter out in-addr (Complete)
 -Filter out non-domains (Complete?)
 -URL Filtering Check (Complete)
--Multiple IPs and URLs
--import list
+-Multiple IPs and URLs (Complete)
+-import list (Complete)
 -output to file
 -******* Fix IPvoid for IP's that haven't been scanned previously. ********
 -Add URL support
@@ -39,7 +39,7 @@ To do:
 #urlInput = "tekdefense.com"
 def usage():
     print '''
-    ONLY -t AND -h WORK CURRENTLY!! 
+    ONLY -t, -h, and -f WORK CURRENTLY!! 
     -t: target ip or url.  URL must include http://
     -s: source engine (robtex, ipvoid, fortiguard)
     -a: all engines
@@ -73,14 +73,15 @@ def main():
         usage()
         sys.exit()
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "t,o,sa,f,h")
+        print sys.argv
+        opts, args = getopt.getopt(sys.argv[1:], "h,t,o,sa,f")
+        print args
+        print opts
     except getopt.GetoptError, err:
         print str(err)
         usage()
         sys.exit(2)
     for op, a in opts:
-        print op
-        print args
         if op in ("-h","--help"):
             usage()
             sys.exit()
@@ -89,7 +90,23 @@ def main():
                 ipInput = str(i)
                 robtex(ipInput)
                 ipvoid(ipInput)
-                fortiURL(ipInput)
+                fortiURL(ipInput)        
+        elif op in '"-f", "--file"':
+            for i in args:
+                li = open(i).readlines()
+                for i in li:
+                    li = str(i)
+                    ipInput = li.strip()
+                    robtex(ipInput)
+                    ipvoid(ipInput)
+                    fortiURL(ipInput)
+        elif op in '"-o", "--output"':
+            output = ""
+            output = str(args)
+            print output
+            o = open(output, "w")
+            print o
+            sys.stdout = o  
         #Need to work on this a bit more, but on the right track.
         elif op in '"-s"':
             engine1 = str(args)
@@ -206,6 +223,7 @@ def fortiURL(ipInput):
         print ('Uncategorized')
   
 '''
+"h:t:o:sa:f:"
 74.125.232.102
 188.95.52.162
 http://www.mxtoolbox.com/SuperTool.aspx?action=blacklist%3a188.95.52.162
