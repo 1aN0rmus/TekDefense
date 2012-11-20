@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
-import httplib2, re, sys, getopt
-#ipInput = 'IP PLACEHOLDER'
+import httplib2, re, sys, argparse
 
 print ''' 
  ___        _                        _            
@@ -50,79 +49,40 @@ def usage():
     Examples:
     ./Automater.py -t 123.123.123.123 -a -o result.txt
     ./Automater.py -f hosts.txt -s robtex -o results.txt
-    '''
-
-
-'''    
-def start(argv):
-    if len(sys.argv) < 4:
-        usage()
-        sys.exit()
-    try :
-           opts, args = getopt.getopt(argv, "l:d:b:s:vf:nhcte:")
-    except getopt.GetoptError:
-               usage()
-        sys.exit()
-'''    
-      
-      
+    '''  
+          
 #ipInput = (raw_input('Please enter an IP address to be queried: '))
 
 def main():   
-    if len(sys.argv) < 3:
-        usage()
-        sys.exit()
-    try:
-        print sys.argv
-        opts, args = getopt.getopt(sys.argv[1:], "h,t,o,sa,f")
-        print args
-        print opts
-    except getopt.GetoptError, err:
-        print str(err)
-        usage()
-        sys.exit(2)
-    for op, a in opts:
-        if op in ("-h","--help"):
-            usage()
-            sys.exit()
-        elif op in '"-t", "--target"':
-            for i in args:    
-                ipInput = str(i)
-                robtex(ipInput)
-                ipvoid(ipInput)
-                fortiURL(ipInput)        
-        elif op in '"-f", "--file"':
-            for i in args:
-                li = open(i).readlines()
-                for i in li:
-                    li = str(i)
-                    ipInput = li.strip()
-                    robtex(ipInput)
-                    ipvoid(ipInput)
-                    fortiURL(ipInput)
-        elif op in '"-o", "--output"':
+    parser = argparse.ArgumentParser(description='This is Automater Biotch!')
+    parser.add_argument('-t', '--target', help='List one or more IP Addresses.  If more than one seperate with a space.')
+    parser.add_argument('-f', '--file', help='This option is used to import a file that contains IP Addresses or URLs')
+    parser.add_argument('-o', '--output', help='This option will output the results to a file.')
+    args = parser.parse_args()
+    if args.target:
+        if args.output != None:
+            print 'Printing results to file:', args.output
             output = ""
-            output = str(args)
-            print output
+            output = str(args.output)
             o = open(output, "w")
-            print o
             sys.stdout = o  
-        #Need to work on this a bit more, but on the right track.
-        elif op in '"-s"':
-            engine1 = str(args)
-            engine = engine1[2:-2]
-            if engine == "robtex":
-                robtex(ipInput)
-            elif engine == "ipvoid":
-                ipvoid(ipInput)
-            elif engine == "fortiurl":
-                fortiURL(ipInput)
-            else:
-                assert False, "not an engine, try robtex, ipvoid, or fortiurl"
-        else:
-            assert False, "unhandled option"
-            
-    
+        ipInput = args.target
+        robtex(ipInput)
+        ipvoid(ipInput)
+        fortiURL(ipInput)
+    elif args.file:
+        if args.output != None:
+            print 'Printing results to file:', args.output
+            output = ""
+            output = str(args.output)
+            o = open(output, "w")
+            sys.stdout = o  
+        li = open(args.file).readlines()
+        for i in li:
+            li = str(i)
+            ipInput = li.strip()
+            robtex(ipInput)
+            ipvoid(ipInput)
 
 def robtex(ipInput):   
     h1 = httplib2.Http(".cache")
@@ -223,7 +183,6 @@ def fortiURL(ipInput):
         print ('Uncategorized')
   
 '''
-"h:t:o:sa:f:"
 74.125.232.102
 188.95.52.162
 http://www.mxtoolbox.com/SuperTool.aspx?action=blacklist%3a188.95.52.162
@@ -235,9 +194,3 @@ http://www.mxtoolbox.com/SuperTool.aspx?action=blacklist%3a188.95.52.162
 
 if __name__ == "__main__":
     main()
-    
-#     try: start(sys.argv[1:])
-#    except KeyboardInterrupt:
-#        print "Search interrupted by user.."
-#    except:
-#        sys.exit()
