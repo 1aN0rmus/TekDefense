@@ -24,15 +24,16 @@ To do:
 -URL Filtering Check (Complete)
 -Multiple IPs and URLs (Complete)
 -import list (Complete)
--output to file
+-output to file (Complete)
 -******* Fix IPvoid for IP's that haven't been scanned previously. ********
 -Add URL support
--Add command options/arguments (-t and -h work, working on the others)
+-Add command options/arguments (Yay for Argparser!)
 -add nmap option
 -pretty up
 -Add malwaredomainlist checker
 -more blacklist sources
 -timeout function
+-tinyurl checker
 '''
 
 #urlInput = "tekdefense.com"
@@ -114,54 +115,65 @@ def ipvoid(ipInput):
     h2 = httplib2.Http(".cache")
     resp, content2 = h2.request(("http://ipvoid.com/scan/" + ipInput), "GET")
     content2String = (str(content2))
-    '''
-    TESTING POST METHOD, NO WORKIE THOUGH.
-    from httplib2 import Http
-    from urllib import urlencode
-    h = Http()
-    data = dict(url = ipInput)
-    resp, content = h.request("http://ipvoid.com", "POST", urlencode(data))
-    print (content)
-    '''
-    #print(content2String)
-    rpd2 = re.compile('\>DETECTED\<span\>\<\/td\>\n\s+<td\>\<a\srel="nofollow"\shref="(\w+:\/\/.+)"\s', re.IGNORECASE)
-    rpdFind2 = re.findall(rpd2,content2String)
-    rpdSorted2=sorted(rpdFind2)
+    rpderr = re.compile('\<div\sclass\=\"error\"\>', re.IGNORECASE)
+    rpdFinderr = re.findall(rpderr,content2String)
+    if "error" in str(rpdFinderr):
+        ipvoidErr = True
+    else:
+        ipvoidErr = False
+    if ipvoidErr == False:
+        rpd2 = re.compile('\>DETECTED\<span\>\<\/td\>\n\s+<td\>\<a\srel="nofollow"\shref="(\w+:\/\/.+)"\s', re.IGNORECASE)
+        rpdFind2 = re.findall(rpd2,content2String)
+        rpdSorted2=sorted(rpdFind2)
     
-    print ''
-    print 'Blacklist Status:'
-    print '------------------------------' 
+        print ''
+        print 'Blacklist Status:'
+        print '------------------------------' 
     
-    rpd3 = re.compile('\<td\>ISP:.....\n\s+\<td\>\<a\s.+\>(.+)\<\/a\>', re.IGNORECASE)
-    rpdFind3 = re.findall(rpd3,content2String)
-    rpdSorted3=sorted(rpdFind3)
+        rpd3 = re.compile('\<td\>ISP:.....\n\s+\<td\>\<a\s.+\>(.+)\<\/a\>', re.IGNORECASE)
+        rpdFind3 = re.findall(rpd3,content2String)
+        rpdSorted3=sorted(rpdFind3)
     
-    rpd4 = re.compile('\<td\>IP\sCountry:.....\n\s+\<td\>\<img\ssrc=.+\salt=.+\s\<a\s.+\>(.+)\<\/a\>', re.IGNORECASE)
-    rpdFind4 = re.findall(rpd4,content2String)
-    rpdSorted4=sorted(rpdFind4)
+        rpd4 = re.compile('\<td\>IP\sCountry:.....\n\s+\<td\>\<img\ssrc=.+\salt=.+\s\<a\s.+\>(.+)\<\/a\>', re.IGNORECASE)
+        rpdFind4 = re.findall(rpd4,content2String)
+        rpdSorted4=sorted(rpdFind4)
 
     
-    j=''
-    for j in rpdSorted2:
-        print ('Host is listed in blacklist at '+ j)
-    if j=='':
-        print('IP is not listed in a blacklist')
+        j=''
+        for j in rpdSorted2:
+            print ('Host is listed in blacklist at '+ j)
+        if j=='':
+            print('IP is not listed in a blacklist')
     
-    print ''    
-    print 'IP ISP and Geo Location:'
-    print '------------------------------' 
+        print ''    
+        print 'IP ISP and Geo Location:'
+        print '------------------------------' 
        
-    k=''
-    for k in rpdSorted3:
-        print ('The ISP for this IP is: '+ k)
-    if k=='':
-        print('No ISP listed')
+        k=''
+        for k in rpdSorted3:
+            print ('The ISP for this IP is: '+ k)
+        if k=='':
+            print('No ISP listed')
         
-    l=''
-    for l in rpdSorted4:
-        print ('Geographic Location: '+ l)
-    if l=='':
-        print ('No GEO location listed')
+        l=''
+        for l in rpdSorted4:
+            print ('Geographic Location: '+ l)
+        if l=='':
+            print ('No GEO location listed')
+    else:
+        print ''
+        print 'Blacklist Status:'
+        print '------------------------------'
+        print 'This host has not been scanned in IPVoid previously. To get Blacklist and Geo location information please submit host IP to IPVoid.com manually then run again. This will be fixed soon'
+'''
+TESTING POST METHOD, NO WORKIE THOUGH.
+from httplib2 import Http
+from urllib import urlencode
+h = Http()
+data = dict(url = ipInput)
+resp, content = h.request("http://ipvoid.com", "POST", urlencode(data))
+print (content)
+'''
 
 def fortiURL(ipInput):
     h3 = httplib2.Http(".cache")
