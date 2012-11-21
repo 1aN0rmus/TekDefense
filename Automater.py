@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import httplib2, re, sys, argparse
+import httplib2, re, sys, argparse, urllib, urllib2
 
 print ''' 
  ___        _                        _            
@@ -24,16 +24,15 @@ To do:
 -URL Filtering Check (Complete)
 -Multiple IPs and URLs (Complete)
 -import list (Complete)
--output to file (Complete)
--******* Fix IPvoid for IP's that haven't been scanned previously. ********
+-output to file
+-Fix IPvoid for IP's that haven't been scanned previously. (Complete) 
 -Add URL support
--Add command options/arguments (Yay for Argparser!)
+-Add command options/arguments (-t and -h work, working on the others)
 -add nmap option
 -pretty up
 -Add malwaredomainlist checker
 -more blacklist sources
 -timeout function
--tinyurl checker
 '''
 
 #urlInput = "tekdefense.com"
@@ -161,19 +160,55 @@ def ipvoid(ipInput):
         if l=='':
             print ('No GEO location listed')
     else:
+        print '------------------------------'
+        print 'Scanning host now on IPVoid.com.  May take a few seconds.'
+        print '------------------------------'
+        url = ('http://www.ipvoid.com/scan/'+ipInput)
+        raw_params = {'url':ipInput,'go':'Scan Now'}
+        params = urllib.urlencode(raw_params)
+        request = urllib2.Request(url,params,headers={'Content-type':'application/x-www-form-urlencoded'})
+        page = urllib2.urlopen(request)
+        page = page.read()
+        content2String = str(page)
+        
+        rpd2 = re.compile('\>DETECTED\<span\>\<\/td\>\n\s+<td\>\<a\srel="nofollow"\shref="(\w+:\/\/.+)"\s', re.IGNORECASE)
+        rpdFind2 = re.findall(rpd2,content2String)
+        rpdSorted2=sorted(rpdFind2)
+    
         print ''
         print 'Blacklist Status:'
-        print '------------------------------'
-        print 'This host has not been scanned in IPVoid previously. To get Blacklist and Geo location information please submit host IP to IPVoid.com manually then run again. This will be fixed soon'
-'''
-TESTING POST METHOD, NO WORKIE THOUGH.
-from httplib2 import Http
-from urllib import urlencode
-h = Http()
-data = dict(url = ipInput)
-resp, content = h.request("http://ipvoid.com", "POST", urlencode(data))
-print (content)
-'''
+        print '------------------------------' 
+    
+        rpd3 = re.compile('\<td\>ISP:.....\n\s+\<td\>\<a\s.+\>(.+)\<\/a\>', re.IGNORECASE)
+        rpdFind3 = re.findall(rpd3,content2String)
+        rpdSorted3=sorted(rpdFind3)
+    
+        rpd4 = re.compile('\<td\>IP\sCountry:.....\n\s+\<td\>\<img\ssrc=.+\salt=.+\s\<a\s.+\>(.+)\<\/a\>', re.IGNORECASE)
+        rpdFind4 = re.findall(rpd4,content2String)
+        rpdSorted4=sorted(rpdFind4)
+
+    
+        j=''
+        for j in rpdSorted2:
+            print ('Host is listed in blacklist at '+ j)
+        if j=='':
+            print('IP is not listed in a blacklist')
+    
+        print ''    
+        print 'IP ISP and Geo Location:'
+        print '------------------------------' 
+       
+        k=''
+        for k in rpdSorted3:
+            print ('The ISP for this IP is: '+ k)
+        if k=='':
+            print('No ISP listed')
+        
+        l=''
+        for l in rpdSorted4:
+            print ('Geographic Location: '+ l)
+        if l=='':
+            print ('No GEO location listed')
 
 def fortiURL(ipInput):
     h3 = httplib2.Http(".cache")
