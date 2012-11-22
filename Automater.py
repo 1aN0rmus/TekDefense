@@ -24,15 +24,17 @@ To do:
 -URL Filtering Check (Complete)
 -Multiple IPs and URLs (Complete)
 -import list (Complete)
--output to file
--Fix IPvoid for IP's that haven't been scanned previously. (Complete) 
--Add URL support
--Add command options/arguments (-t and -h work, working on the others)
--add nmap option
--pretty up
+-output to file (Complete)
+-Fix IPvoid for IP's that haven't been scanned previously. (Complete)
+-Add URL support!!!
+-Add command options/arguments (Complete, Yay Argparse!)
 -Add malwaredomainlist checker
--more blacklist sources
+-unshorten url (Complete)
 -timeout function
+-export to csv
+-export to html
+-pretty up code
+-Pretty up output
 '''
 
 #urlInput = "tekdefense.com"
@@ -58,6 +60,7 @@ def main():
     parser.add_argument('-t', '--target', help='List one or more IP Addresses.  If more than one seperate with a space.')
     parser.add_argument('-f', '--file', help='This option is used to import a file that contains IP Addresses or URLs')
     parser.add_argument('-o', '--output', help='This option will output the results to a file.')
+    parser.add_argument('-e', '--expand', help='This option will expand a shortened url using unshort.me')
     args = parser.parse_args()
     if args.target:
         if args.output != None:
@@ -83,6 +86,9 @@ def main():
             ipInput = li.strip()
             robtex(ipInput)
             ipvoid(ipInput)
+    elif args.expand:
+        url = args.expand
+        unshortunURL(url)
 
 def robtex(ipInput):   
     h1 = httplib2.Http(".cache")
@@ -228,8 +234,28 @@ def fortiURL(ipInput):
         print ('URL Categorization: '+ m)
     if m=='':
         print ('Uncategorized')
-  
+
+def unshortunURL(url):
+    h4 = httplib2.Http(".cache")
+    resp, content4 = h4.request(("http://unshort.me/index.php?r=" + url), "GET")
+    content4String = (str(content4))
+    
+    rpd6 = re.compile('result\"\>\s\<a\shref\=\".+\>(.+)\<\/a\>\s', re.IGNORECASE)
+    rpdFind6 = re.findall(rpd6,content4String)
+    rpdSorted6=sorted(rpdFind6)
+    
+    # print content3String
+    print ''
+    print 'URL UnShortner:'
+    print '------------------------------'  
+    m=''
+    for m in rpdSorted6:
+        if url not in m:
+            print (url + ' redirects to: ' + m)
+        else:
+            print (url + ' is not a recognized shortened URL.')
 '''
+http://unshort.me/index.php?r=bit.ly/XDlV1q
 74.125.232.102
 188.95.52.162
 http://www.mxtoolbox.com/SuperTool.aspx?action=blacklist%3a188.95.52.162
