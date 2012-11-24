@@ -69,7 +69,8 @@ def main():
         if rpdSorted7 == input:
             print '------------------------------'
             print '------------------------------'
-            print input + ' is an IP.  Running IP toolset'
+            print input + ' is an IP. ' 
+            print 'Running IP toolset'
             print '------------------------------'
             print '------------------------------'
             ipInput = input
@@ -79,7 +80,8 @@ def main():
         else:
             print '------------------------------'
             print '------------------------------'
-            print input + ' is a URL.  Running URL toolset'
+            print input + ' is a URL.  '
+            print 'Running URL toolset'
             print '------------------------------'
             print '------------------------------'
             urlInput = input
@@ -377,17 +379,9 @@ def urlvoid(url):
 
     
 '''
-(?:\d{1,3}\.){3}\d{1,3}|                    (?# IPv4 address)
-[:a-fA-F0-9]*:[:a-fA-F0-9]*:[:a-fA-F0-9.]*| (?# IPv6 address)
-                (?# domain name)
-http://unshort.me/index.php?r=bit.ly/XDlV1q
 74.125.232.102
 188.95.52.162
 http://www.mxtoolbox.com/SuperTool.aspx?action=blacklist%3a188.95.52.162
-('\/(.{1,20}\.\w{2,3})\.html'
->(.+\.\w{2,3})<\/a>
-/<a [^>]*href="?([^">]+)"?>/
-'(\w{1,20}\.(|\w {1,20}|\.)\w{2,3})\.html'
 '''
 
 if __name__ == "__main__":
