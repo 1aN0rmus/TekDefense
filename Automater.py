@@ -28,13 +28,14 @@ To do:
 -Fix IPvoid for IP's that haven't been scanned previously. (Complete)
 -Add URL support (Complete)
 -Add command options/arguments (Complete, Yay Argparse!)
--Add malwaredomainlist checker
 -unshorten url (Complete)
 -timeout function
 -export to csv
 -export to html
 -pretty up code
 -Pretty up output
+-Add malwaredomainlist checker
+-add source engine selection
 '''
 
 #urlInput = "tekdefense.com"      
@@ -87,6 +88,7 @@ def main():
             urlInput = input
             unshortunURL(urlInput)
             urlvoid(urlInput)
+            fortiURL(urlInput)
     elif args.file:
         if args.output != None:
             print 'Printing results to file:', args.output
@@ -376,13 +378,6 @@ def urlvoid(url):
             print ('Domain creation date: '+ m)
         if m=='':
             print ('Domain creation date not listed.')
-
-    
-'''
-74.125.232.102
-188.95.52.162
-http://www.mxtoolbox.com/SuperTool.aspx?action=blacklist%3a188.95.52.162
-'''
 
 if __name__ == "__main__":
     main()
