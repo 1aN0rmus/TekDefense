@@ -42,7 +42,7 @@ To do:
 #ipInput = (raw_input('Please enter an IP address to be queried: '))
 
 def main():   
-    parser = argparse.ArgumentParser(description='This is Automater Biotch!')
+    parser = argparse.ArgumentParser(description='Welcome to Automater!')
     parser.add_argument('-t', '--target', help='List one IP Addresses to query.  Does not support more than one address.')
     parser.add_argument('-f', '--file', help='This option is used to import a file that contains IP Addresses or URLs')
     parser.add_argument('-o', '--output', help='This option will output the results to a file.')
