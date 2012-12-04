@@ -42,7 +42,7 @@ To do:
 #ipInput = (raw_input('Please enter an IP address to be queried: '))
 
 def main():   
-    parser = argparse.ArgumentParser(description='Welcome to Automater!')
+    parser = argparse.ArgumentParser(description='IP and URL Passive Analysis tool')
     parser.add_argument('-t', '--target', help='List one IP Addresses to query.  Does not support more than one address.')
     parser.add_argument('-f', '--file', help='This option is used to import a file that contains IP Addresses or URLs')
     parser.add_argument('-o', '--output', help='This option will output the results to a file.')
@@ -133,10 +133,23 @@ def main():
                 urlInput = input
                 urlvoid(urlInput)
                 unshortunURL(urlInput)
+                fortiURL(urlInput)
                 print ''
                 print ''
-                
+        if args.expand != None:
+            for i in li:
+                li = str(i)
+                ipInput = li.strip()
+                url = ipInput
+                unshortunURL(url)
+                    
     elif args.expand:
+        if args.output != None:
+            print 'Printing results to file:', args.output
+            output = ""
+            output = str(args.output)
+            o = open(output, "w")
+            sys.stdout = o  
         url = args.expand
         unshortunURL(url)
 
@@ -146,7 +159,7 @@ def robtex(ipInput):
     content1String = (str(content1))
     #print content1String
 
-    rpd = re.compile('\s>(.{1,20})\<\/a>\s\<\/span\>\<\/td\>\n\<td\sclass="..."\s...........\>a', re.IGNORECASE)
+    rpd = re.compile('href\=\"\/\/host\.robtex\.com\/(.+).html\"\s+\>.+\<\/a\>\s\<\/span\>\<\/td\>\n\<td\sclass\="\w+\"\scolspan\="\d*\"\>a', re.IGNORECASE)
     rpdFind = re.findall(rpd,content1String)
     
     rpdSorted=sorted(rpdFind)
