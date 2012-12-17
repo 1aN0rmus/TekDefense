@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 '''
 Created on Oct 19, 2012
 Script to test regex against a file containing values 
@@ -7,27 +9,19 @@ to match.
 
 import re
 
-fileImport =open('example.txt')
+fileImport =open('sample.txt')
 
 strFile=''
 
-for line in fileImport
+for line in fileImport:
     strFile += line
 
 print(strFile)
 
-regexValue = re.compile('Regex Here')
-regexSearch = re.search(regexValue,strFile)
+regexValue = re.compile('\d{1,5}\s\w+\s\w{1,3}\.')
+regexSearch = re.findall(regexValue,strFile)
 
-if(regexSearch)
-        print('String Found '+regexSearch.group())
-else
+if(regexSearch):
+        print('String Found: '+ str(regexSearch))
+else:
     print('Nothing Found')
-    
-
-
-
-
-
-if __name__ == '__main__'
-    pass
