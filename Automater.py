@@ -36,6 +36,7 @@ To do:
 -Pretty up output
 -Add malwaredomainlist checker
 -add source engine selection
+-re-write with beautifulsoup
 '''
 
 #urlInput = "tekdefense.com"      
@@ -47,60 +48,37 @@ def main():
     parser.add_argument('-f', '--file', help='This option is used to import a file that contains IP Addresses or URLs')
     parser.add_argument('-o', '--output', help='This option will output the results to a file.')
     parser.add_argument('-e', '--expand', help='This option will expand a shortened url using unshort.me')
+    parser.add_argument('-s', '--source', help='This option will only run the target against a specifc source engine to pull associated domains.  Options are robtex, ipvoid, fortinet, urlvoid ')
     args = parser.parse_args()
+    if args.source == "robtex":
+            ipInput = str(args.target)
+            print args.source + " source engine selected"
+            robtex(ipInput)
+    if args.source == "ipvoid":
+            ipInput = str(args.target)
+            print args.source + " source engine selected"
+            ipvoid(ipInput)
+    if args.source == "fortinet":
+            ipInput = str(args.target)
+            print args.source + " source engine selected"
+            fortiURL(ipInput)
+    if args.source == "urlvoid":
+            urlInput = str(args.target)
+            print args.source + " source engine selected"
+            urlvoid(urlInput)
     if args.target:
         if args.output != None:
             print 'Printing results to file:', args.output
             output = ""
             output = str(args.output)
             o = open(output, "w")
-            sys.stdout = o  
-        input = args.target
-        rpd7 = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', re.IGNORECASE)
-        rpdFind7 = re.findall(rpd7,input)
-        rpdSorted7=sorted(rpdFind7)
-        rpdSorted7=str(rpdSorted7)
-        rpdSorted7=rpdSorted7[2:-2]
-    
-        rpd8 = re.compile('([-a-z0-9A-Z]+\.[-a-z0-9A-Z]*).+', re.IGNORECASE)
-        rpdFind8 = re.findall(rpd8,input)
-        rpdSorted8=sorted(rpdFind8)
-        rpdSorted8=str(rpdSorted8)
-        rpdSorted8=rpdSorted8[2:-2]
-        if rpdSorted7 == input:
+            sys.stdout = o
+        if args.source != None:
             print '------------------------------'
+            print "operation complete"
             print '------------------------------'
-            print input + ' is an IP. ' 
-            print 'Running IP toolset'
-            print '------------------------------'
-            print '------------------------------'
-            ipInput = input
-            robtex(ipInput)
-            ipvoid(ipInput)
-            fortiURL(ipInput)
-        else:
-            print '------------------------------'
-            print '------------------------------'
-            print input + ' is a URL.  '
-            print 'Running URL toolset'
-            print '------------------------------'
-            print '------------------------------'
-            urlInput = input
-            unshortunURL(urlInput)
-            urlvoid(urlInput)
-            fortiURL(urlInput)
-    elif args.file:
-        if args.output != None:
-            print 'Printing results to file:', args.output
-            output = ""
-            output = str(args.output)
-            o = open(output, "w")
-            sys.stdout = o  
-        li = open(args.file).readlines()
-        for i in li:
-            li = str(i)
-            ipInput = li.strip()
-            input = ipInput
+        else: 
+            input = args.target
             rpd7 = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', re.IGNORECASE)
             rpdFind7 = re.findall(rpd7,input)
             rpdSorted7=sorted(rpdFind7)
@@ -115,27 +93,77 @@ def main():
             if rpdSorted7 == input:
                 print '------------------------------'
                 print '------------------------------'
-                print input + ' is an IP.  Running IP toolset'
+                print input + ' is an IP. ' 
+                print 'Running IP toolset'
                 print '------------------------------'
                 print '------------------------------'
                 ipInput = input
                 robtex(ipInput)
                 ipvoid(ipInput)
                 fortiURL(ipInput)
-                print ''
-                print ''
             else:
                 print '------------------------------'
                 print '------------------------------'
-                print input + ' is a URL.  Running URL toolset'
+                print input + ' is a URL.  '
+                print 'Running URL toolset'
                 print '------------------------------'
                 print '------------------------------'
                 urlInput = input
-                urlvoid(urlInput)
                 unshortunURL(urlInput)
+                urlvoid(urlInput)
                 fortiURL(urlInput)
-                print ''
-                print ''
+    elif args.file:
+        if args.output != None:
+            print 'Printing results to file:', args.output
+            output = ""
+            output = str(args.output)
+            o = open(output, "w")
+            sys.stdout = o  
+        li = open(args.file).readlines()
+        for i in li:
+            li = str(i)
+            ipInput = li.strip()
+            input = ipInput
+            if args.source != None:
+                print '------------------------------'
+                print "operation complete"
+                print '------------------------------'
+            else:
+                rpd7 = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', re.IGNORECASE)
+                rpdFind7 = re.findall(rpd7,input)
+                rpdSorted7=sorted(rpdFind7)
+                rpdSorted7=str(rpdSorted7)
+                rpdSorted7=rpdSorted7[2:-2]
+    
+                rpd8 = re.compile('([-a-z0-9A-Z]+\.[-a-z0-9A-Z]*).+', re.IGNORECASE)
+                rpdFind8 = re.findall(rpd8,input)
+                rpdSorted8=sorted(rpdFind8)
+                rpdSorted8=str(rpdSorted8)
+                rpdSorted8=rpdSorted8[2:-2]
+                if rpdSorted7 == input:
+                    print '------------------------------'
+                    print '------------------------------'
+                    print input + ' is an IP.  Running IP toolset'
+                    print '------------------------------'
+                    print '------------------------------'
+                    ipInput = input
+                    robtex(ipInput)
+                    ipvoid(ipInput)
+                    fortiURL(ipInput)
+                    print ''
+                    print ''
+                else:
+                    print '------------------------------'
+                    print '------------------------------'
+                    print input + ' is a URL.  Running URL toolset'
+                    print '------------------------------'
+                    print '------------------------------'
+                    urlInput = input
+                    urlvoid(urlInput)
+                    unshortunURL(urlInput)
+                    fortiURL(urlInput)
+                    print ''
+                    print ''
         if args.expand != None:
             for i in li:
                 li = str(i)
@@ -190,19 +218,19 @@ def ipvoid(ipInput):
     else:
         ipvoidErr = False
     if ipvoidErr == False:
-        rpd2 = re.compile('\>DETECTED\<span\>\<\/td\>\n\s+<td\>\<a\srel="nofollow"\shref="(\w+:\/\/.+)"\s', re.IGNORECASE)
+        rpd2 = re.compile('Detected\<\/font\>\<\/td..td..a.rel..nofollow..href.\"(.{6,70})\"\stitle\=\"View', re.IGNORECASE)
         rpdFind2 = re.findall(rpd2,content2String)
         rpdSorted2=sorted(rpdFind2)
-    
+        
         print ''
         print 'Blacklist Status:'
         print '------------------------------' 
     
-        rpd3 = re.compile('\<td\>ISP:.....\n\s+\<td\>\<a\s.+\>(.+)\<\/a\>', re.IGNORECASE)
+        rpd3 = re.compile('ISP\<\/td\>\<td\>(.+)\<\/td\>', re.IGNORECASE)
         rpdFind3 = re.findall(rpd3,content2String)
         rpdSorted3=sorted(rpdFind3)
     
-        rpd4 = re.compile('\<td\>IP\sCountry:.....\n\s+\<td\>\<img\ssrc=.+\salt=.+\s\<a\s.+\>(.+)\<\/a\>', re.IGNORECASE)
+        rpd4 = re.compile('Country\sCode.+flag\"\s\/\>\s(.+)\<\/td\>', re.IGNORECASE)
         rpdFind4 = re.findall(rpd4,content2String)
         rpdSorted4=sorted(rpdFind4)
 
