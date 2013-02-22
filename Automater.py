@@ -11,32 +11,17 @@ print '''
 \_| |_/\__,_|\__\___/|_| |_| |_|\__,_|\__\___|_|   
 
 Welcome to Automater! I have created this tool to help analyst investigate IP Addresses and URLs with the common web based tools.  All activity is passive so it will not alert attackers.
-Web Tools used are:
-IPvoid.com, Robtex.com, Fortiguard.com, unshorten.me, Urlvoid.com 
+Web Tools used are: IPvoid.com, Robtex.com, Fortiguard.com, unshorten.me, Urlvoid.com 
 www.TekDefense.com
-@author: 1aN0rmus@TekDefense.com
+@author: 1aN0rmus@TekDefense.com, Ian Ahl
+Version 1.2
 '''
 '''
-To do:
--Filter out domain duplicates (Complete)
--Filter out in-addr (Complete)
--Filter out non-domains (Complete?)
--URL Filtering Check (Complete)
--Multiple IPs and URLs (Complete)
--import list (Complete)
--output to file (Complete)
--Fix IPvoid for IP's that haven't been scanned previously. (Complete)
--Add URL support (Complete)
--Add command options/arguments (Complete, Yay Argparse!)
--unshorten url (Complete)
--timeout function
--export to csv
--export to html
--pretty up code
--Pretty up output
--Add malwaredomainlist checker
--add source engine selection
--re-write with beautifulsoup
+Changelog:
+1.2
+[+] Changed output style to @ViolentPython style
+[+] Fixed IPVoid and URLVoid result for new regexes
+[+] Fixed form submit for IP's and URLs that were not previously scanned
 '''
 
 #urlInput = "tekdefense.com"      
@@ -68,15 +53,13 @@ def main():
             urlvoid(urlInput)
     if args.target:
         if args.output != None:
-            print 'Printing results to file:', args.output
+            print '[+] Printing results to file:', args.output
             output = ""
             output = str(args.output)
             o = open(output, "w")
             sys.stdout = o
         if args.source != None:
-            print '------------------------------'
-            print "operation complete"
-            print '------------------------------'
+            print "[*] operation complete"
         else: 
             input = args.target
             rpd7 = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', re.IGNORECASE)
@@ -91,30 +74,24 @@ def main():
             rpdSorted8=str(rpdSorted8)
             rpdSorted8=rpdSorted8[2:-2]
             if rpdSorted7 == input:
-                print '------------------------------'
-                print '------------------------------'
-                print input + ' is an IP. ' 
-                print 'Running IP toolset'
-                print '------------------------------'
-                print '------------------------------'
+                print '--------------------------------'
+                print '[*] ' + input + ' is an IP. ' 
+                print '[*] Running IP toolset'
                 ipInput = input
                 robtex(ipInput)
                 ipvoid(ipInput)
                 fortiURL(ipInput)
             else:
-                print '------------------------------'
-                print '------------------------------'
-                print input + ' is a URL.  '
-                print 'Running URL toolset'
-                print '------------------------------'
-                print '------------------------------'
+                print '--------------------------------'
+                print '[*] ' + input + ' is a URL.  '
+                print '[*] Running URL toolset'
                 urlInput = input
                 unshortunURL(urlInput)
                 urlvoid(urlInput)
                 fortiURL(urlInput)
     elif args.file:
         if args.output != None:
-            print 'Printing results to file:', args.output
+            print '[*] Printing results to file:', args.output
             output = ""
             output = str(args.output)
             o = open(output, "w")
@@ -125,9 +102,7 @@ def main():
             ipInput = li.strip()
             input = ipInput
             if args.source != None:
-                print '------------------------------'
-                print "operation complete"
-                print '------------------------------'
+                print "[*] operation complete"
             else:
                 rpd7 = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', re.IGNORECASE)
                 rpdFind7 = re.findall(rpd7,input)
@@ -141,29 +116,19 @@ def main():
                 rpdSorted8=str(rpdSorted8)
                 rpdSorted8=rpdSorted8[2:-2]
                 if rpdSorted7 == input:
-                    print '------------------------------'
-                    print '------------------------------'
-                    print input + ' is an IP.  Running IP toolset'
-                    print '------------------------------'
-                    print '------------------------------'
+                    print '--------------------------------'
+                    print '[*] ' + input + ' is an IP.  Running IP toolset'
                     ipInput = input
                     robtex(ipInput)
                     ipvoid(ipInput)
                     fortiURL(ipInput)
-                    print ''
-                    print ''
                 else:
-                    print '------------------------------'
-                    print '------------------------------'
-                    print input + ' is a URL.  Running URL toolset'
-                    print '------------------------------'
-                    print '------------------------------'
+                    print '--------------------------------'
+                    print '[*] ' + input + ' is a URL.  Running URL toolset'
                     urlInput = input
                     urlvoid(urlInput)
                     unshortunURL(urlInput)
                     fortiURL(urlInput)
-                    print ''
-                    print ''
         if args.expand != None:
             for i in li:
                 li = str(i)
@@ -173,7 +138,7 @@ def main():
                     
     elif args.expand:
         if args.output != None:
-            print 'Printing results to file:', args.output
+            print '[+] Printing results to file:', args.output
             output = ""
             output = str(args.output)
             o = open(output, "w")
@@ -192,28 +157,23 @@ def robtex(ipInput):
     
     rpdSorted=sorted(rpdFind)
     
-    print ''
-    print ('Generating report for ' + ipInput)
-    print ''
-    print 'This IP Address resolves to the following domains(A Records only):'
-    print '------------------------------' 
-    
     i=''
     for i in rpdSorted:
         if len(i)>4:
             if not i == ipInput:
-                print (i)
+                print '[+] A records from Robtex: ' + (i)
     if i=='':
-        print 'This IP does not resolve to a domain'
+        print '[-] This IP does not resolve to a domain'
     
     
 def ipvoid(ipInput):                
     h2 = httplib2.Http(".cache")
     resp, content2 = h2.request(("http://ipvoid.com/scan/" + ipInput), "GET")
     content2String = (str(content2))
-    rpderr = re.compile('\<div\sclass\=\"error\"\>', re.IGNORECASE)
+    rpderr = re.compile('An\sError\soccurred', re.IGNORECASE)
     rpdFinderr = re.findall(rpderr,content2String)
-    if "error" in str(rpdFinderr):
+    # print content2String
+    if "ERROR" in str(rpdFinderr):
         ipvoidErr = True
     else:
         ipvoidErr = False
@@ -221,10 +181,6 @@ def ipvoid(ipInput):
         rpd2 = re.compile('Detected\<\/font\>\<\/td..td..a.rel..nofollow..href.\"(.{6,70})\"\stitle\=\"View', re.IGNORECASE)
         rpdFind2 = re.findall(rpd2,content2String)
         rpdSorted2=sorted(rpdFind2)
-        
-        print ''
-        print 'Blacklist Status:'
-        print '------------------------------' 
     
         rpd3 = re.compile('ISP\<\/td\>\<td\>(.+)\<\/td\>', re.IGNORECASE)
         rpdFind3 = re.findall(rpd3,content2String)
@@ -237,76 +193,62 @@ def ipvoid(ipInput):
     
         j=''
         for j in rpdSorted2:
-            print ('Host is listed in blacklist at '+ j)
+            print ('[+] Host is listed in blacklist at '+ j)
         if j=='':
-            print('IP is not listed in a blacklist')
-    
-        print ''    
-        print 'IP ISP and Geo Location:'
-        print '------------------------------' 
+            print('[-] IP is not listed in a blacklist')
        
         k=''
         for k in rpdSorted3:
-            print ('The ISP for this IP is: '+ k)
+            print ('[+] The ISP for this IP is: '+ k)
         if k=='':
-            print('No ISP listed')
+            print('[-] No ISP listed')
         
         l=''
         for l in rpdSorted4:
-            print ('Geographic Location: '+ l)
+            print ('[+] Geographic Location: '+ l)
         if l=='':
-            print ('No GEO location listed')
+            print ('[-] No GEO location listed')
     else:
-        print '------------------------------'
-        print 'Scanning host now on IPVoid.com.  May take a few seconds.'
-        print '------------------------------'
-        url = ('http://www.ipvoid.com/scan/'+ipInput)
-        raw_params = {'url':ipInput,'go':'Scan Now'}
+        print '[*] Scanning host now on IPVoid.com.  May take a few seconds.'
+
+        url = ('http://www.ipvoid.com/')
+        raw_params = {'ip':ipInput,'go':'Scan Now'}
         params = urllib.urlencode(raw_params)
         request = urllib2.Request(url,params,headers={'Content-type':'application/x-www-form-urlencoded'})
         page = urllib2.urlopen(request)
         page = page.read()
         content2String = str(page)
         
-        rpd2 = re.compile('\>DETECTED\<span\>\<\/td\>\n\s+<td\>\<a\srel="nofollow"\shref="(\w+:\/\/.+)"\s', re.IGNORECASE)
+        rpd2 = re.compile('Detected\<\/font\>\<\/td..td..a.rel..nofollow..href.\"(.{6,70})\"\stitle\=\"View', re.IGNORECASE)
         rpdFind2 = re.findall(rpd2,content2String)
         rpdSorted2=sorted(rpdFind2)
     
-        print ''
-        print 'Blacklist Status:'
-        print '------------------------------' 
-    
-        rpd3 = re.compile('\<td\>ISP:.....\n\s+\<td\>\<a\s.+\>(.+)\<\/a\>', re.IGNORECASE)
+        rpd3 = re.compile('ISP\<\/td\>\<td\>(.+)\<\/td\>', re.IGNORECASE)
         rpdFind3 = re.findall(rpd3,content2String)
         rpdSorted3=sorted(rpdFind3)
     
-        rpd4 = re.compile('\<td\>IP\sCountry:.....\n\s+\<td\>\<img\ssrc=.+\salt=.+\s\<a\s.+\>(.+)\<\/a\>', re.IGNORECASE)
+        rpd4 = re.compile('Country\sCode.+flag\"\s\/\>\s(.+)\<\/td\>', re.IGNORECASE)
         rpdFind4 = re.findall(rpd4,content2String)
         rpdSorted4=sorted(rpdFind4)
 
     
         j=''
         for j in rpdSorted2:
-            print ('Host is listed in blacklist at '+ j)
+            print ('[+] Host is listed in blacklist at '+ j)
         if j=='':
-            print('IP is not listed in a blacklist')
-    
-        print ''    
-        print 'IP ISP and Geo Location:'
-        print '------------------------------' 
+            print('[-] IP is not listed in a blacklist')
        
         k=''
         for k in rpdSorted3:
-            print ('The ISP for this IP is: '+ k)
+            print ('[+] The ISP for this IP is: '+ k)
         if k=='':
-            print('No ISP listed')
+            print('[-] No ISP listed')
         
         l=''
         for l in rpdSorted4:
-            print ('Geographic Location: '+ l)
+            print ('[+] Geographic Location: '+ l)
         if l=='':
-            print ('No GEO location listed')
-
+            print ('[-] No GEO location listed')
 def fortiURL(ipInput):
     h3 = httplib2.Http(".cache")
     resp, content3 = h3.request(("http://www.fortiguard.com/ip_rep.php?data=" + ipInput + "&lookup=Lookup"), "GET")
@@ -317,14 +259,11 @@ def fortiURL(ipInput):
     rpdSorted5=sorted(rpdFind5)
     
     # print content3String
-    print ''
-    print 'FortiGuard URL Classification:'
-    print '------------------------------'  
     m=''
     for m in rpdSorted5:
-        print ('URL Categorization: '+ m)
+        print ('[+] FortiGuard URL Categorization: '+ m)
     if m=='':
-        print ('Uncategorized')
+        print ('[-] FortiGuard URL Categorization: Uncategorized')
 
 def unshortunURL(url):
     h4 = httplib2.Http(".cache")
@@ -336,89 +275,133 @@ def unshortunURL(url):
     rpdSorted6=sorted(rpdFind6)
     
     # print content3String
-    print ''
-    print 'URL UnShortner:'
-    print '------------------------------'  
+
     m=''
     for m in rpdSorted6:
         if url not in m:
-            print (url + ' redirects to: ' + m)
+            print ('[+] ' + url + ' redirects to: ' + m)
         else:
-            print (url + ' is not a recognized shortened URL.')
+            print ('[-] ' + url + ' is not a recognized shortened URL.')
 def urlvoid(url):                
     h2 = httplib2.Http(".cache")
     resp, content2 = h2.request(("http://urlvoid.com/scan/" + url), "GET")
     content2String = (str(content2))
-    rpderr = re.compile('\<div\sclass\=\"error\"\>', re.IGNORECASE)
+    rpderr = re.compile('An\sError\soccurred', re.IGNORECASE)
     rpdFinderr = re.findall(rpderr,content2String)
-    if "error" in str(rpdFinderr):
+    # print content2String
+    if "ERROR" in str(rpdFinderr):
         ipvoidErr = True
     else:
         ipvoidErr = False
     if ipvoidErr == False:
         
-        rpd1 = re.compile('\<td\>IP\sAddress:\<\/td\>\n\s+\<td\>\n\s+\<a\shref=\"\/ip\/(\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}).+\n\s+\<\/td>', re.IGNORECASE)
+        rpd1 = re.compile('(\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}).+Scan\swith\s', re.IGNORECASE)
         rpdFind1 = re.findall(rpd1,content2String)
         rpdSorted1=sorted(rpdFind1) 
         
-        rpd2 = re.compile('\>DETECTED\<span\>\<\/td\>\n\s+<td\>\<a\srel="nofollow"\shref="(\w+:\/\/.+)"\s', re.IGNORECASE)
+        rpd2 = re.compile('DETECTED.{25,40}href\=\"(.{10,50})\"\stitle', re.IGNORECASE)
         rpdFind2 = re.findall(rpd2,content2String)
         rpdSorted2=sorted(rpdFind2)   
 
-        rpd3 = re.compile('\<td\>ISP:\<\/td\>\n\s+\<td\>(.+)\<\/td>', re.IGNORECASE)
+        rpd3 = re.compile('latitude\s\/\slongitude.+\<td\>(.+)\<\/td\>', re.IGNORECASE)
         rpdFind3 = re.findall(rpd3,content2String)
         rpdSorted3=sorted(rpdFind3)
         
-        rpd4 = re.compile('\<td\>IP\sCountry:\<\/td\>\n\s+\<td\>.+\/\>\s(.+)\<\/td>', re.IGNORECASE)
+        rpd4 = re.compile('alt\=\"flag\".+\>(.+)\<\/td\>', re.IGNORECASE)
         rpdFind4 = re.findall(rpd4,content2String)
         rpdSorted4=sorted(rpdFind4)
         
-        rpd5 = re.compile('\<td\>Domain\sCreated:\<\/td\>\n\s+\<td\>(.+)\<\/td>', re.IGNORECASE)
+        rpd5 = re.compile('Domain\s1st\sRegistered.+\<td\>(.+)\<\/td\>', re.IGNORECASE)
         rpdFind5 = re.findall(rpd5,content2String)
         rpdSorted5=sorted(rpdFind5)
         
-        print ''    
-        print 'IP Address:'
-        print '------------------------------' 
-        
         i=''
         for i in rpdSorted1:
-            print ('Host IP Address is '+ i)
+            print ('[+] Host IP Address is '+ i)
         if i=='':
-            print('IP is not listed')
-    
-        
-        print ''
-        print 'Blacklist Status:'
-        print '------------------------------' 
+            print('[-] IP is not listed')
         
         j=''
         for j in rpdSorted2:
-            print ('Host is listed in blacklist at '+ j)
+            print ('[+] Host is listed in blacklist at '+ j)
         if j=='':
-            print('IP is not listed in a blacklist')
-    
-        print ''    
-        print 'IP ISP and Geo Location:'
-        print '------------------------------' 
+            print('[-] IP is not listed in a blacklist')
        
         k=''
         for k in rpdSorted3:
-            print ('ISP: '+ k)
+            print ('[+] Latitude / Longitude: '+ k)
         if k=='':
-            print('No ISP listed')
+            print('[-] No Latitude / Longitude listed')
         
         l=''
         for l in rpdSorted4:
-            print ('Geographic Location: '+ l)
+            print ('[+] Country: '+ l)
         if l=='':
-            print ('No GEO location listed')
+            print ('[-] No Country listed')
         
         m=''
         for m in rpdSorted5:
-            print ('Domain creation date: '+ m)
+            print ('[+] Domain creation date: '+ m)
         if m=='':
-            print ('Domain creation date not listed.')
+            print ('[-] Domain creation date not listed.')
+    else:
+        print '[*] Scanning host now on URLVoid.com.  May take a few seconds.'
+        urlvoid = ('http://www.urlvoid.com/')
+        raw_params = {'url':url,'Check':'Submit'}
+        params = urllib.urlencode(raw_params)
+        request = urllib2.Request(urlvoid,params,headers={'Content-type':'application/x-www-form-urlencoded'})
+        page = urllib2.urlopen(request)
+        page = page.read()
+        content2String = str(page)
+        #print content2String
+        rpd1 = re.compile('(\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}).+Scan\swith\s', re.IGNORECASE)
+        rpdFind1 = re.findall(rpd1,content2String)
+        rpdSorted1=sorted(rpdFind1) 
+        
+        rpd2 = re.compile('DETECTED.{25,40}href\=\"(.{10,50})\"\stitle', re.IGNORECASE)
+        rpdFind2 = re.findall(rpd2,content2String)
+        rpdSorted2=sorted(rpdFind2)   
 
+        rpd3 = re.compile('latitude\s\/\slongitude.+\<td\>(.+)\<\/td\>', re.IGNORECASE)
+        rpdFind3 = re.findall(rpd3,content2String)
+        rpdSorted3=sorted(rpdFind3)
+        
+        rpd4 = re.compile('alt\=\"flag\".+\>(.+)\<\/td\>', re.IGNORECASE)
+        rpdFind4 = re.findall(rpd4,content2String)
+        rpdSorted4=sorted(rpdFind4)
+        
+        rpd5 = re.compile('Domain\s1st\sRegistered.+\<td\>(.+)\<\/td\>', re.IGNORECASE)
+        rpdFind5 = re.findall(rpd5,content2String)
+        rpdSorted5=sorted(rpdFind5)
+        
+        i=''
+        for i in rpdSorted1:
+            print ('[+] Host IP Address is '+ i)
+        if i=='':
+            print('[-] IP is not listed')
+        
+        j=''
+        for j in rpdSorted2:
+            print ('[+] Host is listed in blacklist at '+ j)
+        if j=='':
+            print('[-] IP is not listed in a blacklist')
+       
+        k=''
+        for k in rpdSorted3:
+            print ('[+] Latitude / Longitude: '+ k)
+        if k=='':
+            print('[-] No Latitude / Longitude listed')
+        
+        l=''
+        for l in rpdSorted4:
+            print ('[+] Country: '+ l)
+        if l=='':
+            print ('[-] No Country listed')
+        
+        m=''
+        for m in rpdSorted5:
+            print ('[+] Domain creation date: '+ m)
+        if m=='':
+            print ('[-] Domain creation date not listed.')
 if __name__ == "__main__":
     main()
