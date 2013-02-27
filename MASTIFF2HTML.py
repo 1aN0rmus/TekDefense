@@ -9,7 +9,7 @@ Created: 02/25/2013
 
 # location of the MASTIFF sqlite DB
 mastiffDB = '/opt/malware/APT1/log/mastiff.db'
-
+# Adding command options
 parser = argparse.ArgumentParser(description='Generate HTML From a specified sqlite DB')
 parser.add_argument('-d', '--database', help='Select the database you want to use')
 parser.add_argument('-o', '--output', help='Output filename')
@@ -54,9 +54,27 @@ print '''
     padding: 4px 7px 2px;
     vertical-align: top;
 }
+h1 {
+    text-shadow: rgba(255, 255, 255, 0.796875) 0px 1px 0px;
+    font-family: Georgia,"Times New Roman","Bitstream Charter",Times,serif;
+    font-weight: normal;
+    padding: 7px 7px 8px;
+    text-align: Center;
+    line-height: 1.3em;
+    font-size: 40px;
+}
+h2 {
+    text-shadow: rgba(255, 255, 255, 0.796875) 0px 1px 0px;
+    font-family: Georgia,"Times New Roman","Bitstream Charter",Times,serif;
+    font-weight: normal;
+    padding: 7px 7px 8px;
+    text-align: left;
+    line-height: 1.3em;
+    font-size: 16px;
+}
 </style>
 '''
-
+# Connect to the MASTIFF DB
 con = sqlite3.connect(mastiffDB)
 
 with con:    
@@ -67,14 +85,18 @@ with con:
     # SQL Server Results
     rows = cur.fetchall()
     # Generate HTML
-    print '<html>'
-    print '<body>'
-    print '<table id="table-3">'
-    print '<caption>Count of File Types</caption>'
-    print '<tr>'
-    print '<th>File Type</th>'
-    print '<th>Count</th>'
-    print '</tr>'
+    print '''
+    <html>
+    <body>
+    <title> MASTIFF DB Results </title>
+    <h1> MASTIFF DB Results </h1>
+    <h2> Count of File Types </h2>
+    <table id="table-3">
+    <tr>
+    <th>File Type</th>
+    <th>Count</th>
+    </tr>
+    '''
     # Generate Table data from the DB
     for row in rows:
         print ('<tr><td>' + str(row[0]) + '</td><td>' + str(row[1]) + '</td>' + '<td></tr>') 
@@ -85,18 +107,26 @@ with con:
     cur.execute("SELECT * FROM MASTIFF")
     # SQL Server Results
     rows = cur.fetchall()
-    print '<table id="table-3">'
-    print '<caption>Sample Details</caption>'
-    print '<tr>'
-    print '<th>ID</th>'
-    print '<th>MD5</th>'
-    print '<th>File Type</th>'
-    print '<th>Fuzzy Hash</th>'
-    print '</tr>'
+    print '''
+    </table>
+    <br>
+    <table id="table-3">
+    <h2> Sample Details </h2>
+    <tr>
+    <th>ID</th>
+    <th>MD5</th>
+    <th>File Type</th>
+    <th>Fuzzy Hash</th>
+    </tr>
+    '''
     # Generate Table data from the DB    
     for row in rows:
         print ('<tr><td>' + str(row[0]) + '</td><td>' + str(row[1]) + '</td><td>' + str(row[4]) + '</td><td>' + str(row[5]) + '</td><td></tr>')
-    print '</table>'
-    print '</html>'
-    print '</body>' 
-    
+    print '''
+    </table>
+    <br>
+    <br>
+    <h4>Created using @TekDefense MASTIFF2HTML.py  www.tekdefense.com; https://github.com/1aN0rmus/TekDefense</h4>
+    </body>
+    </html>
+    '''
