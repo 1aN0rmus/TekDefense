@@ -22,6 +22,7 @@ if args.output != None:
     output = str(args.output)
     o = open(output, "w")
     sys.stdout = o 
+# CSS from http://pythoughts.com/table-style-css/
 print '''
 <style type="text/css">
 #table-3 {
