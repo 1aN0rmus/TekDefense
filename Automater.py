@@ -11,7 +11,7 @@ print '''
 \_| |_/\__,_|\__\___/|_| |_| |_|\__,_|\__\___|_|   
 
 Welcome to Automater! I have created this tool to help analyst investigate IP Addresses and URLs with the common web based tools.  All activity is passive so it will not alert attackers.
-Web Tools used are: IPvoid.com, Robtex.com, Fortiguard.com, unshorten.me, Urlvoid.com 
+Web Tools used are: IPvoid.com, Robtex.com, Fortiguard.com, unshorten.me, Urlvoid.com, Labs.alienvault.com
 www.TekDefense.com
 @author: 1aN0rmus@TekDefense.com, Ian Ahl
 Version 1.2
@@ -33,7 +33,7 @@ def main():
     parser.add_argument('-f', '--file', help='This option is used to import a file that contains IP Addresses or URLs')
     parser.add_argument('-o', '--output', help='This option will output the results to a file.')
     parser.add_argument('-e', '--expand', help='This option will expand a shortened url using unshort.me')
-    parser.add_argument('-s', '--source', help='This option will only run the target against a specifc source engine to pull associated domains.  Options are robtex, ipvoid, fortinet, urlvoid ')
+    parser.add_argument('-s', '--source', help='This option will only run the target against a specifc source engine to pull associated domains.  Options are robtex, ipvoid, fortinet, urlvoid, alienvault')
     args = parser.parse_args()
     if args.source == "robtex":
             ipInput = str(args.target)
@@ -51,6 +51,10 @@ def main():
             urlInput = str(args.target)
             print args.source + " source engine selected"
             urlvoid(urlInput)
+    if args.source == "alienvault":
+            ipInput = str(args.target)
+            print args.source + " source engine selected"
+            alienvault(ipInput)
     if args.target:
         if args.output != None:
             print '[+] Printing results to file:', args.output
@@ -81,6 +85,7 @@ def main():
                 robtex(ipInput)
                 ipvoid(ipInput)
                 fortiURL(ipInput)
+                alienvault(ipInput)
             else:
                 print '--------------------------------'
                 print '[*] ' + input + ' is a URL.  '
@@ -122,6 +127,7 @@ def main():
                     robtex(ipInput)
                     ipvoid(ipInput)
                     fortiURL(ipInput)
+                    alienvault(ipInput)
                 else:
                     print '--------------------------------'
                     print '[*] ' + input + ' is a URL.  Running URL toolset'
@@ -403,5 +409,21 @@ def urlvoid(url):
             print ('[+] Domain creation date: '+ m)
         if m=='':
             print ('[-] Domain creation date not listed.')
+
+def alienvault(ipInput):
+    h1 = httplib2.Http(".cache")
+    url = "http://labs.alienvault.com/labs/index.php/projects/open-source-ip-reputation-portal/information-about-ip/?ip=" + ipInput 
+    resp, conten1 = h1.request((url), "GET")
+    content1String = (str(conten1))
+    
+    rpd = re.compile('.*IP not found.*')
+    rpdFind = re.findall(rpd,content1String)
+
+    if not rpdFind:
+        print ('[+] IP is listed in AlienVault IP reputation database at ' + url)
+    else:
+        print ('[-] IP is not listed in AlienVault IP reputation database')
+        
+
 if __name__ == "__main__":
     main()
