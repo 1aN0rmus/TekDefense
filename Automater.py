@@ -20,6 +20,7 @@ Version 1.2
 Changelog:
 1.2.1
 [+] Modified regex in Robtex function to pick up "A" records that were being missed.
+[+] Alienvault reputation data added by guillermogrande.  Thank you!
 1.2
 [+] Changed output style to @ViolentPython style
 [+] Fixed IPVoid and URLVoid result for new regexes
