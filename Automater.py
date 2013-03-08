@@ -18,6 +18,8 @@ Version 1.2
 '''
 '''
 Changelog:
+1.2.1
+[+] Modified regex in Robtex function to pick up "A" records that were being missed.
 1.2
 [+] Changed output style to @ViolentPython style
 [+] Fixed IPVoid and URLVoid result for new regexes
@@ -152,7 +154,7 @@ def robtex(ipInput):
     content1String = (str(content1))
     #print content1String
 
-    rpd = re.compile('href\=\"\/\/host\.robtex\.com\/(.+).html\"\s+\>.+\<\/a\>\s\<\/span\>\<\/td\>\n\<td\sclass\="\w+\"\scolspan\="\d*\"\>a', re.IGNORECASE)
+    rpd = re.compile('href\=\"\/\/.+\.robtex\.com\/(.+).html\"\s+\>.+\<\/a\>\s\<\/span\>\<\/td\>\n\<td\sclass\="\w+\"\scolspan\="\d*\"\>a', re.IGNORECASE)
     rpdFind = re.findall(rpd,content1String)
     
     rpdSorted=sorted(rpdFind)
