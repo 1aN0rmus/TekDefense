@@ -13,11 +13,16 @@ print '''
 Welcome to Automater! I have created this tool to help analyst investigate IP Addresses and URLs with the common web based tools.  All activity is passive so it will not alert attackers.
 Web Tools used are: IPvoid.com, Robtex.com, Fortiguard.com, unshorten.me, Urlvoid.com, Labs.alienvault.com
 www.TekDefense.com
-@author: 1aN0rmus@TekDefense.com, Ian Ahl
-Version 1.2
+@author: 1aN0rmus@TekDefense.com, Ian Ahl, @TekDefense
+Version 1.2.2
 '''
 '''
 Changelog:
+1.2.2
+[+] Fixed FortiGuard rating https://github.com/1aN0rmus/TekDefense/issues/10
+[+] Display help when no arguments are given https://github.com/1aN0rmus/TekDefense/issues/8
+[+] Added Hash Search functionality https://github.com/1aN0rmus/TekDefense/issues/7
+[+] Sources for Hash search are VxVault, ThreatExpert, JoeSandBox, and Minotaur
 1.2.1
 [+] Modified regex in Robtex function to pick up "A" records that were being missed.
 [+] Alienvault reputation data added by guillermogrande.  Thank you!
@@ -26,7 +31,7 @@ Changelog:
 [+] Fixed IPVoid and URLVoid result for new regexes
 [+] Fixed form submit for IP's and URLs that were not previously scanned
 '''
-
+# md5 = '513f8915be522be98a4124d6958391f9'
 #urlInput = "tekdefense.com"      
 #ipInput = (raw_input('Please enter an IP address to be queried: '))
 
@@ -38,6 +43,9 @@ def main():
     parser.add_argument('-e', '--expand', help='This option will expand a shortened url using unshort.me')
     parser.add_argument('-s', '--source', help='This option will only run the target against a specifc source engine to pull associated domains.  Options are robtex, ipvoid, fortinet, urlvoid, alienvault')
     args = parser.parse_args()
+    if args.target == None and args.file == None:
+        parser.print_help()
+        sys.exit(1)
     if args.source == "robtex":
             ipInput = str(args.target)
             print args.source + " source engine selected"
@@ -68,35 +76,7 @@ def main():
         if args.source != None:
             print "[*] operation complete"
         else: 
-            input = args.target
-            rpd7 = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', re.IGNORECASE)
-            rpdFind7 = re.findall(rpd7,input)
-            rpdSorted7=sorted(rpdFind7)
-            rpdSorted7=str(rpdSorted7)
-            rpdSorted7=rpdSorted7[2:-2]
-    
-            rpd8 = re.compile('([-a-z0-9A-Z]+\.[-a-z0-9A-Z]*).+', re.IGNORECASE)
-            rpdFind8 = re.findall(rpd8,input)
-            rpdSorted8=sorted(rpdFind8)
-            rpdSorted8=str(rpdSorted8)
-            rpdSorted8=rpdSorted8[2:-2]
-            if rpdSorted7 == input:
-                print '--------------------------------'
-                print '[*] ' + input + ' is an IP. ' 
-                print '[*] Running IP toolset'
-                ipInput = input
-                robtex(ipInput)
-                ipvoid(ipInput)
-                fortiURL(ipInput)
-                alienvault(ipInput)
-            else:
-                print '--------------------------------'
-                print '[*] ' + input + ' is a URL.  '
-                print '[*] Running URL toolset'
-                urlInput = input
-                unshortunURL(urlInput)
-                urlvoid(urlInput)
-                fortiURL(urlInput)
+            targetID(args.target)
     elif args.file:
         if args.output != None:
             print '[*] Printing results to file:', args.output
@@ -112,32 +92,7 @@ def main():
             if args.source != None:
                 print "[*] operation complete"
             else:
-                rpd7 = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', re.IGNORECASE)
-                rpdFind7 = re.findall(rpd7,input)
-                rpdSorted7=sorted(rpdFind7)
-                rpdSorted7=str(rpdSorted7)
-                rpdSorted7=rpdSorted7[2:-2]
-    
-                rpd8 = re.compile('([-a-z0-9A-Z]+\.[-a-z0-9A-Z]*).+', re.IGNORECASE)
-                rpdFind8 = re.findall(rpd8,input)
-                rpdSorted8=sorted(rpdFind8)
-                rpdSorted8=str(rpdSorted8)
-                rpdSorted8=rpdSorted8[2:-2]
-                if rpdSorted7 == input:
-                    print '--------------------------------'
-                    print '[*] ' + input + ' is an IP.  Running IP toolset'
-                    ipInput = input
-                    robtex(ipInput)
-                    ipvoid(ipInput)
-                    fortiURL(ipInput)
-                    alienvault(ipInput)
-                else:
-                    print '--------------------------------'
-                    print '[*] ' + input + ' is a URL.  Running URL toolset'
-                    urlInput = input
-                    urlvoid(urlInput)
-                    unshortunURL(urlInput)
-                    fortiURL(urlInput)
+                targetID(input)
         if args.expand != None:
             for i in li:
                 li = str(i)
@@ -259,20 +214,20 @@ def ipvoid(ipInput):
         if l=='':
             print ('[-] No GEO location listed')
 def fortiURL(ipInput):
-    h3 = httplib2.Http(".cache")
-    resp, content3 = h3.request(("http://www.fortiguard.com/ip_rep.php?data=" + ipInput + "&lookup=Lookup"), "GET")
-    content3String = (str(content3))
+    h = httplib2.Http(".cache")
+    resp, content = h.request(("http://www.fortiguard.com/ip_rep/index.php?data=" + ipInput + "&lookup=Lookup"), "GET")
+    contentString = (str(content))
     
-    rpd5 = re.compile('Category:\s\<span\sstyle\=\"font\-size\:200\%\"\>(.+)\<\/span', re.IGNORECASE)
-    rpdFind5 = re.findall(rpd5,content3String)
-    rpdSorted5=sorted(rpdFind5)
+    rpd = re.compile('Category:\s(.+)\<\/h3\>\s\<a', re.IGNORECASE)
+    rpdFind = re.findall(rpd,contentString)
+    rpdSorted=sorted(rpdFind)
     
-    # print content3String
+    #print content3String
     m=''
-    for m in rpdSorted5:
+    for m in rpdSorted:
         print ('[+] FortiGuard URL Categorization: '+ m)
-    if m=='':
-        print ('[-] FortiGuard URL Categorization: Uncategorized')
+    if m =='':
+        print ('[-] Unable to connect to FortiGuard.com')
 
 def unshortunURL(url):
     h4 = httplib2.Http(".cache")
@@ -426,7 +381,103 @@ def alienvault(ipInput):
         print ('[+] IP is listed in AlienVault IP reputation database at ' + url)
     else:
         print ('[-] IP is not listed in AlienVault IP reputation database')
-        
+
+def md5Hash(md5):
+    h = httplib2.Http(".cache")
+    url = "http://www.threatexpert.com/report.aspx?md5=" + md5 
+    resp, content = h.request((url), "GET")
+    contentString = (str(content))
+    #print contentString
+    rpd = re.compile('Submission\sreceived.\s(.+)\<\/li\>')
+    rpdFind = re.findall(rpd,contentString)
+
+    h1 = httplib2.Http(".cache")
+    url1 = "http://minotauranalysis.com/search.aspx?q=" + md5 
+    resp, content1 = h1.request((url1), "GET")
+    contentString1 = (str(content1))
+    #print contentString1
+    rpd1 = re.compile('Date\sSubmitted.\<\/td\>\<td\>(.{12,25})\<\/td\>')
+    rpdFind1 = re.findall(rpd1,contentString1)
+    
+    h2 = httplib2.Http(".cache")
+    url2 = "http://www.joesecurity.org/reports/report-" + md5 + '.html'
+    resp, content2 = h2.request((url2), "GET")
+    contentString2 = (str(content2))
+    #print contentString2
+    rpd2 = re.compile('404\s\-\s')
+    rpdFind2 = re.findall(rpd2,contentString2)
+    
+    h3 = httplib2.Http(".cache")
+    url3 = "http://vxvault.siri-urz.net/ViriList.php?MD5=" + md5
+    resp, content3 = h3.request((url3), "GET")
+    contentString3 = (str(content3))
+    #print contentString3
+    rpd3 = re.compile('\d{4}\-\d{2}\-\d{2}')
+    rpdFind3 = re.findall(rpd3,contentString3)
+    
+    if rpdFind:
+        print ('[+] MD5 last scanned on ' + str(rpdFind)[2:-2] + ' at ' + url)
+    else:
+        print ('[-] MD5 Not Found ThreatExpert')
+ 
+    if rpdFind1:
+        print ('[+] MD5 last scanned on ' + str(rpdFind1)[2:-2] + ' at ' + url1)
+    else:
+        print ('[-] MD5 Not Found on Minotaur')     
+    
+    if rpdFind2:
+        print ('[-] MD5 not found at Joe SandBox')
+    else:
+        print ('[+] MD5 was seen at ' + url2)
+    
+    if rpdFind3:
+        print ('[+] MD5 last scanned on ' + str(rpdFind3[0]) + ' at ' + url3)
+    else:
+        print ('[-] MD5 Not Found on VxVault')   
+          
+def targetID(input):
+    rpd7 = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', re.IGNORECASE)
+    rpdFind7 = re.findall(rpd7,input)
+    rpdSorted7=sorted(rpdFind7)
+    rpdSorted7=str(rpdSorted7)
+    rpdSorted7=rpdSorted7[2:-2]
+    
+    rpd8 = re.compile('([-a-z0-9A-Z]+\.[-a-z0-9A-Z]*).+', re.IGNORECASE)
+    rpdFind8 = re.findall(rpd8,input)
+    rpdSorted8=sorted(rpdFind8)
+    rpdSorted8=str(rpdSorted8)
+    rpdSorted8=rpdSorted8[2:-2]
+            
+    rpd9 = re.compile('[a-fA-F0-9]{32}', re.IGNORECASE)
+    rpdFind9 = re.findall(rpd9,input)
+    rpdSorted9=sorted(rpdFind9)
+    rpdSorted9=str(rpdSorted9)
+    rpdSorted9=rpdSorted9[2:-2]
+            
+    if rpdSorted7 == input:
+        print '--------------------------------'
+        print '[*] ' + input + ' is an IP. ' 
+        print '[*] Running IP toolset'
+        ipInput = input
+        robtex(ipInput)
+        ipvoid(ipInput)
+        fortiURL(ipInput)
+        alienvault(ipInput)
+            
+    elif rpdSorted9 == input:
+        print '--------------------------------'
+        print '[*] ' + input + ' is an MD5 Hash. ' 
+        print '[*] Running MD5 Hash Toolset'
+        md5 = input
+        md5Hash(md5) 
+    else:
+        print '--------------------------------'
+        print '[*] ' + input + ' is a URL.  '
+        print '[*] Running URL toolset'
+        urlInput = input
+        unshortunURL(urlInput)
+        urlvoid(urlInput)
+        fortiURL(urlInput)  
 
 if __name__ == "__main__":
     main()
