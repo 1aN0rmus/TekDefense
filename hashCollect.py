@@ -10,7 +10,6 @@ Version: 0.3
 Changelog:
 .3
 [+] Added predefined data types that can be invoke with -t type
-[+] Added more comments to the code to make it easier to understand.
 .2
 [+] Expanded the script to allow custom regex with a -r 'regex here'
 .1
@@ -44,7 +43,7 @@ if args.type:
         regVal = '[a-fA-F0-9]{32}'
     if args.type.upper() == 'DOMAIN':
         regVal = '([a-zA-Z0-9-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)'
-    if args.type.upper() == 'URL':
+    if args.type == 'URL':
         regVal = '(http\:\/\/|https\:\/\/)([a-zA-Z0-9-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)'
     if args.type.upper() == 'IP4':
         regVal = '((?<![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9]))'
@@ -57,9 +56,9 @@ if args.type:
     if args.type.upper() == 'CCN':
         regVal = '\d{14,16}|\d{4}\s\d{4}\s\d{4}\s\d{2,4}|\d{4}\-\d{4}\-\d{4}\-\d{2,4}'
     # If the user puts in a data type we do not have defined above, then let them know what types of data are available.
-    else:
-        print '[-]' + args.type + ' is not a valid type. Current valid types are MD5, SHA1, SHA256, DOMAIN, URL, IP4, IP6, SSN, EMAIL, and CCN'
-        sys.exit()
+    #else:
+        #print '[-] ' + args.type + ' is not a valid type. Current valid types are MD5, SHA1, SHA256, DOMAIN, URL, IP4, IP6, SSN, EMAIL, and CCN'
+        #sys.exit()
 # If the user wants to set a custom regex, it is collected here and added to the regVal variable.
 if args.regex:
     regVal = str(args.regex)
