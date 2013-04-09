@@ -59,7 +59,7 @@ if args.type:
     elif args.type.upper() == 'DOMAIN':
         regVal = DOMAIN
     elif args.type == 'URL':
-        regVal = IP4
+        regVal = URL
     elif args.type.upper() == 'IP4':
         regVal = IP4
     elif args.type.upper() == 'IP6':
