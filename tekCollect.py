@@ -5,9 +5,12 @@ This is tekCollect! This tool will scrape specified data types out of a URL or f
 @TekDefense
 Ian Ahl | www.TekDefense.com | 1aN0rmus@tekDefense.com
 *Some of the Regular Expressions were taken from http://gskinner.com/RegExr/
-Version: 0.3
+Version: 0.4
 
 Changelog:
+.4
+[+] Fixed issue where -t IP4 returned URLs
+[+] Added summary functions that shows what tpes of data are in a specified target.
 .3
 [+] Added predefined data types that can be invoke with -t type
 .2
@@ -19,7 +22,7 @@ Changelog:
 import httplib2, re, sys, argparse
 
 # Adding arguments
-parser = argparse.ArgumentParser(description='Hash Collector')
+parser = argparse.ArgumentParser(description='tekCollect is a tool that will scrape a file or website for specified data')
 parser.add_argument('-u', '--url', help='This option is used to search for hashes on a website')
 parser.add_argument('-f', '--file', help='This option is used to import a file that contains hashes')
 parser.add_argument('-o', '--output', help='This option will output the results to a file.')
@@ -58,7 +61,7 @@ if args.type:
     elif args.type == 'URL':
         regVal = IP4
     elif args.type.upper() == 'IP4':
-        regVal = URL
+        regVal = IP4
     elif args.type.upper() == 'IP6':
         regVal = IP6
     elif args.type.upper() == 'SSN':
@@ -153,11 +156,7 @@ if args.url:
 listResults = list(set(listResults))  
 for i in listResults:
     print ''.join(i)
-
-def summary(listTypes):
-    for i in listTypes:
-        regVal = i
-                   
+ 
 
 if __name__ == '__main__':
     pass
