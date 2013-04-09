@@ -5,11 +5,9 @@ This is tekCollect! This tool will scrape specified data types out of a URL or f
 @TekDefense
 Ian Ahl | www.TekDefense.com | 1aN0rmus@tekDefense.com
 *Some of the Regular Expressions were taken from http://gskinner.com/RegExr/
-Version: 0.4
+Version: 0.3
 
 Changelog:
-.4
-[+] Added summary function that will show number of each data type within a target URL or file
 .3
 [+] Added predefined data types that can be invoke with -t type
 .2
@@ -108,7 +106,7 @@ if args.file:
             listResults = list(set(listResults)) 
             for k in listResults:
                 ''.join(k) 
-            print 'There number of ' + i[0] + ' in the target: ' + str(len(listResults))
+            print '# of ' + i[0] + ' in the target: ' + str(len(listResults))
         sys.exit()  
     else:
         iFile = args.file
@@ -139,7 +137,7 @@ if args.url:
             listResults = list(set(listResults)) 
             for k in listResults:
                 ''.join(k) 
-            print 'There number of ' + i[0] + ' in the target: ' + str(len(listResults))
+            print '# of ' + i[0] + ' in the target: ' + str(len(listResults))
         sys.exit()
     else:
         url = args.url
