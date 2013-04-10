@@ -10,7 +10,10 @@ Version: 0.4
 Changelog:
 .4
 [+] Fixed issue where -t IP4 returned URLs
-[+] Added summary functions that shows what tpes of data are in a specified target.
+[+] Added summary functions that shows what types of data are in a specified target.
+[+] Modified the regex for many of the data types for better results
+[+] Added several new data types: zip, twitter, doc, exe, MYSQL hash, Wordpress (WP) hash
+[+] Modified the way summary is displayed
 .3
 [+] Added predefined data types that can be invoke with -t type
 .2
@@ -38,14 +41,25 @@ MD5 = '[a-fA-F0-9]{32}'
 SHA1 = '[a-fA-F0-9]{40}'
 SHA256 = '[a-fA-F0-9]{64}'
 LM = '[a-fA-F0-9]{32}'
-DOMAIN = '([a-zA-Z0-9-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)'
-URL = '(http\:\/\/|https\:\/\/)([a-zA-Z0-9-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)'
+DOMAIN = '([a-zA-Z0-9-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)\W'
+URL = '(http\:\/\/|https\:\/\/)([a-zA-Z0-9-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)\W'
 IP4 = '((?<![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9]))'
 IP6 = '(((([01]? d?\\d)|(2[0-5]{2}))\\.){3}(([01]?\\d?\\d)|(2[0-5]{2})))|(([A-F0-9]){4}(:|::)){1,7}(([A-F0-9]){4})'
 SSN = '(\d{3}\-\d{2}\-\d{3})|(\d{3}\s\d{2}\s\d{3})'
-EMAIL = '([a-zA-Z0-9\.-_]+@)([a-zA-Z0-9-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)'
-CCN = '\d{14,16}|\d{4}\s\d{4}\s\d{4}\s\d{2,4}|\d{4}\-\d{4}\-\d{4}\-\d{2,4}'
-listTypes = [('MD5',MD5), ('SHA1',SHA1), ('SHA256',SHA256), ('DOMAIN', DOMAIN), ('URL', URL), ('IP4',IP4), ('IP6',IP6), ('SSN', SSN), ('EMAIL',EMAIL), ('CCN',CCN)]
+EMAIL = '([a-zA-Z0-9\.-_]+@)([a-zA-Z0-9-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)\W'
+CCN = '\d{4}\s\d{4}\s\d{4}\s\d{2,4}|\d{4}\-\d{4}\-\d{4}\-\d{2,4}'
+TWITTER = '(?<=^|(?<=[^a-zA-Z0-9-_\.]))(@)([A-Za-z]+[A-Za-z0-9]+)'
+PHONE = ''
+NTLM = ''
+DOC = '\W([\w-]+\.)(docx|doc|csv|pdf|xlsx|xls|rtf|txt|pptx|ppt)'
+EXE = '\W([\w-]+\.)(exe|dll)'
+ZIP = '\W([\w-]+\.)(zip|zipx|7z|rar|tar|gz)'
+MYSQL = '\*[a-fA-F0-9]{40}'
+WP = '\$P\$\w{31}'
+CISCO5 = ''
+CISCO7 = ''
+
+listTypes = [('MD5',MD5), ('SHA1',SHA1), ('SHA256',SHA256), ('MYSQL', MYSQL), ('WP', WP), ('DOMAIN', DOMAIN), ('URL', URL), ('EMAIL',EMAIL), ('TWITTER', TWITTER), ('IP4',IP4), ('IP6',IP6), ('DOC', DOC), ('EXE', EXE), ('ZIP', ZIP), ('SSN', SSN), ('CCN',CCN)]
 # Determining what type of data the user wants and setting the regex to the regVal variable for that data type 
 if args.type:
     if args.type.upper() == 'MD5':
@@ -58,7 +72,7 @@ if args.type:
         regVal = LM
     elif args.type.upper() == 'DOMAIN':
         regVal = DOMAIN
-    elif args.type == 'URL':
+    elif args.type.upper() == 'URL':
         regVal = URL
     elif args.type.upper() == 'IP4':
         regVal = IP4
@@ -70,6 +84,18 @@ if args.type:
         regVal = EMAIL
     elif args.type.upper() == 'CCN':
         regVal = CCN
+    elif args.type.upper() == 'DOC':
+        regVal = DOC
+    elif args.type.upper() == 'EXE':
+        regVal = EXE
+    elif args.type.upper() == 'ZIP':
+        regVal = ZIP
+    elif args.type.upper() == 'WP':
+        regVal = WP
+    elif args.type.upper() == 'MYSQL':
+        regVal = MYSQL    
+    elif args.type.upper() == 'TWITTER':
+        regVal = TWITTER
     # If the user puts in a data type we do not have defined above, then let them know what types of data are available.
     else:
         print '[-] ' + args.type + ' is not a valid type. Current valid types are MD5, SHA1, SHA256, DOMAIN, URL, IP4, IP6, SSN, EMAIL, and CCN'
@@ -96,6 +122,7 @@ if args.file:
         iFile = args.file
         fileImport =open(iFile)
         strFile=''
+        print 'Summary of files types for: ' + iFile        
         for line in fileImport:
             strFile += line
         for i in listTypes:
@@ -109,7 +136,7 @@ if args.file:
             listResults = list(set(listResults)) 
             for k in listResults:
                 ''.join(k) 
-            print '# of ' + i[0] + ' in the target: ' + str(len(listResults))
+            print '[+]' + i[0] + ': ' + str(len(listResults))
         sys.exit()  
     else:
         iFile = args.file
@@ -117,6 +144,7 @@ if args.file:
         strFile=''
         for line in fileImport:
             strFile += line    
+        #print strFile
         regexValue = re.compile(regVal)
         regexSearch = re.findall(regexValue,strFile)
         for i in regexSearch:
@@ -129,6 +157,7 @@ if args.url:
         h = httplib2.Http(".cache")
         resp, content = h.request((url), "GET")
         contentString = (str(content))
+        print 'Summary of files types for: ' + url
         for i in listTypes:
             regVal = i[1]
             regexValue = re.compile(regVal)
@@ -140,7 +169,7 @@ if args.url:
             listResults = list(set(listResults)) 
             for k in listResults:
                 ''.join(k) 
-            print '# of ' + i[0] + ' in the target: ' + str(len(listResults))
+            print '[+]' + i[0] + ': ' + str(len(listResults))
         sys.exit()
     else:
         url = args.url
