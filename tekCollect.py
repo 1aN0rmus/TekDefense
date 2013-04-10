@@ -41,7 +41,7 @@ MD5 = '[a-fA-F0-9]{32}'
 SHA1 = '[a-fA-F0-9]{40}'
 SHA256 = '[a-fA-F0-9]{64}'
 LM = '[a-fA-F0-9]{32}'
-DOMAIN = '([a-zA-Z0-9-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)\W'
+DOMAIN = '[^a-fA-F0-9_-]([a-zA-Z0-9_-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)[^a-fA-F0-9_-]'
 URL = '(http\:\/\/|https\:\/\/)([a-zA-Z0-9-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)\W'
 IP4 = '((?<![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9]))'
 IP6 = '(((([01]? d?\\d)|(2[0-5]{2}))\\.){3}(([01]?\\d?\\d)|(2[0-5]{2})))|(([A-F0-9]){4}(:|::)){1,7}(([A-F0-9]){4})'
@@ -122,7 +122,7 @@ if args.file:
         iFile = args.file
         fileImport =open(iFile)
         strFile=''
-        print 'Summary of files types for: ' + iFile        
+        print '[*] Summary of files types for: ' + iFile        
         for line in fileImport:
             strFile += line
         for i in listTypes:
@@ -157,7 +157,7 @@ if args.url:
         h = httplib2.Http(".cache")
         resp, content = h.request((url), "GET")
         contentString = (str(content))
-        print 'Summary of files types for: ' + url
+        print '[*] Summary of files types for: ' + url
         for i in listTypes:
             regVal = i[1]
             regexValue = re.compile(regVal)
