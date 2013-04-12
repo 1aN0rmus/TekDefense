@@ -12,7 +12,7 @@ Changelog:
 [+] Fixed issue where -t IP4 returned URLs
 [+] Added summary functions that shows what types of data are in a specified target.
 [+] Modified the regex for many of the data types for better results
-[+] Added several new data types: zip, twitter, doc, exe, MYSQL hash, Wordpress (WP) hash
+[+] Added several new data types: zip, twitter, doc, exe, MYSQL hash, Wordpress (WP) hash, IMG
 [+] Modified the way summary is displayed
 .3
 [+] Added predefined data types that can be invoke with -t type
@@ -54,12 +54,13 @@ NTLM = ''
 DOC = '\W([\w-]+\.)(docx|doc|csv|pdf|xlsx|xls|rtf|txt|pptx|ppt)'
 EXE = '\W([\w-]+\.)(exe|dll)'
 ZIP = '\W([\w-]+\.)(zip|zipx|7z|rar|tar|gz)'
+IMG = '\W([\w-]+\.)(jpeg|jpg|gif|png|tiff|bmp)'
 MYSQL = '\*[a-fA-F0-9]{40}'
 WP = '\$P\$\w{31}'
 CISCO5 = ''
 CISCO7 = ''
 
-listTypes = [('MD5',MD5), ('SHA1',SHA1), ('SHA256',SHA256), ('MYSQL', MYSQL), ('WP', WP), ('DOMAIN', DOMAIN), ('URL', URL), ('EMAIL',EMAIL), ('TWITTER', TWITTER), ('IP4',IP4), ('IP6',IP6), ('DOC', DOC), ('EXE', EXE), ('ZIP', ZIP), ('SSN', SSN), ('CCN',CCN)]
+listTypes = [('MD5',MD5), ('SHA1',SHA1), ('SHA256',SHA256), ('MYSQL', MYSQL), ('WP', WP), ('DOMAIN', DOMAIN), ('URL', URL), ('EMAIL',EMAIL), ('TWITTER', TWITTER), ('IP4',IP4), ('IP6',IP6), ('DOC', DOC), ('EXE', EXE), ('ZIP', ZIP), ('IMG', IMG), ('SSN', SSN), ('CCN',CCN)]
 # Determining what type of data the user wants and setting the regex to the regVal variable for that data type 
 if args.type:
     if args.type.upper() == 'MD5':
@@ -90,6 +91,8 @@ if args.type:
         regVal = EXE
     elif args.type.upper() == 'ZIP':
         regVal = ZIP
+    elif args.type.upper() == 'IMG':
+        regVal = IMG
     elif args.type.upper() == 'WP':
         regVal = WP
     elif args.type.upper() == 'MYSQL':
