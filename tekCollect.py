@@ -68,22 +68,22 @@ CISCO7 = ''
 
 
 listTypes = [   ('MD5',MD5),
-		        ('SHA1',SHA1), 
-        		('SHA256',SHA256), 
-        		('MYSQL', MYSQL), 
+		('SHA1',SHA1), 
+        	('SHA256',SHA256), 
+        	('MYSQL', MYSQL), 
     	    	('WP', WP), 
-        		('DOMAIN', DOMAIN), 
-    		    ('URL', URL), 
+        	('DOMAIN', DOMAIN), 
+    		('URL', URL), 
     	    	('EMAIL',EMAIL), 
-        		('TWITTER', TWITTER), 
-        		('IP4',IP4), 
-        		('IP6',IP6), 
-        		('DOC', DOC), 
-        		('EXE', EXE), 
-        		('ZIP', ZIP), 
-        		('IMG', IMG), 
-        		('SSN', SSN), 
-    		    ('CCN',CCN)]
+        	('TWITTER', TWITTER), 
+        	('IP4',IP4), 
+        	('IP6',IP6), 
+        	('DOC', DOC), 
+        	('EXE', EXE), 
+        	('ZIP', ZIP), 
+        	('IMG', IMG), 
+        	('SSN', SSN), 
+    		('CCN',CCN)]
 
 # Determining what type of data the user wants and setting the regex to the regVal variable for that data type
 if args.type:
