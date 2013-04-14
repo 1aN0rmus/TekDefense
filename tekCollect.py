@@ -19,7 +19,13 @@ Changelog:
 .2
 [+] Expanded the script to allow custom regex with a -r 'regex here'
 .1
+[+] Replaced listTypes selction with loop
 [+] Tool created and can only pull md5 hashes
+
+TODO
+[-] Proper hash values matching 
+[-] Ability to accept multiple --types
+[-] Improved menu selections & functions
 '''
 
 import httplib2, re, sys, argparse
@@ -31,11 +37,11 @@ parser.add_argument('-f', '--file', help='This option is used to import a file t
 parser.add_argument('-o', '--output', help='This option will output the results to a file.')
 parser.add_argument('-r', '--regex', help='This option allows the user to set a custom regex value. Must incase in single or double quotes.')
 parser.add_argument('-t', '--type', help='This option allows a user to choose the type of data they want to pull out. Currently MD5, SHA1, SHA 256, Domain, URL, IP4, IP6, CCN, SSN, EMAIL')
-parser.add_argument('-s', '--Summary', action='store_true', default=False, help='This options will show a summary of the data types in a file')
+parser.add_argument('-s', '--summary', action='store_true', default=False, help='This options will show a summary of the data types in a file')
 args = parser.parse_args()
 
 # Setting some variables and lists 
-regVal = '[a-fA-F0-9]{32}'
+regVal = '[a-fA-F0-9]{32}'    # Initial revVal
 listResults = []
 MD5 = '[a-fA-F0-9]{32}'
 SHA1 = '[a-fA-F0-9]{40}'
@@ -60,49 +66,36 @@ WP = '\$P\$\w{31}'
 CISCO5 = ''
 CISCO7 = ''
 
-listTypes = [('MD5',MD5), ('SHA1',SHA1), ('SHA256',SHA256), ('MYSQL', MYSQL), ('WP', WP), ('DOMAIN', DOMAIN), ('URL', URL), ('EMAIL',EMAIL), ('TWITTER', TWITTER), ('IP4',IP4), ('IP6',IP6), ('DOC', DOC), ('EXE', EXE), ('ZIP', ZIP), ('IMG', IMG), ('SSN', SSN), ('CCN',CCN)]
-# Determining what type of data the user wants and setting the regex to the regVal variable for that data type 
+
+listTypes = [   ('MD5',MD5),
+		('SHA1',SHA1), 
+        	('SHA256',SHA256), 
+        	('MYSQL', MYSQL), 
+    	    	('WP', WP), 
+        	('DOMAIN', DOMAIN), 
+    		('URL', URL), 
+    	    	('EMAIL',EMAIL), 
+        	('TWITTER', TWITTER), 
+        	('IP4',IP4), 
+        	('IP6',IP6), 
+        	('DOC', DOC), 
+        	('EXE', EXE), 
+        	('ZIP', ZIP), 
+        	('IMG', IMG), 
+        	('SSN', SSN), 
+    		('CCN',CCN)]
+
+# Determining what type of data the user wants and setting the regex to the regVal variable for that data type
 if args.type:
-    if args.type.upper() == 'MD5':
-        regVal = MD5
-    elif args.type.upper() == 'SHA1':
-        regVal = SHA1
-    elif args.type.upper() == 'SHA256':
-        regVal = SHA256
-    elif args.type.upper() == 'LM':
-        regVal = LM
-    elif args.type.upper() == 'DOMAIN':
-        regVal = DOMAIN
-    elif args.type.upper() == 'URL':
-        regVal = URL
-    elif args.type.upper() == 'IP4':
-        regVal = IP4
-    elif args.type.upper() == 'IP6':
-        regVal = IP6
-    elif args.type.upper() == 'SSN':
-        regVal = SSN
-    elif args.type.upper() == 'EMAIL':
-        regVal = EMAIL
-    elif args.type.upper() == 'CCN':
-        regVal = CCN
-    elif args.type.upper() == 'DOC':
-        regVal = DOC
-    elif args.type.upper() == 'EXE':
-        regVal = EXE
-    elif args.type.upper() == 'ZIP':
-        regVal = ZIP
-    elif args.type.upper() == 'IMG':
-        regVal = IMG
-    elif args.type.upper() == 'WP':
-        regVal = WP
-    elif args.type.upper() == 'MYSQL':
-        regVal = MYSQL    
-    elif args.type.upper() == 'TWITTER':
-        regVal = TWITTER
-    # If the user puts in a data type we do not have defined above, then let them know what types of data are available.
-    else:
-        print '[-] ' + args.type + ' is not a valid type. Current valid types are MD5, SHA1, SHA256, DOMAIN, URL, IP4, IP6, SSN, EMAIL, and CCN'
-        sys.exit()
+    for t in listTypes:
+		if args.type.upper() == t[0]:
+			regVal = t[1]
+            
+# If the user puts in a data type we do not have defined above, then let them know what types of data are available.
+else:
+    print '\t[-] ' + args.type + ' is not a valid type. \n\tCurrent valid types are MD5, SHA1, SHA256, DOMAIN, URL, IP4, IP6, SSN, EMAIL, and CCN'
+	sys.exit()
+
 # If the user wants to set a custom regex, it is collected here and added to the regVal variable.
 if args.regex:
     regVal = str(args.regex)
@@ -155,7 +148,7 @@ if args.file:
 
 # If the target to scrape is a url conect to and get content from the url, create a string out of the content, regex the string for the data type specified by the regVal, and put results in a list.    
 if args.url:
-    if args.Summary == True:
+    if args.summary == True:
         url = args.url
         h = httplib2.Http(".cache")
         resp, content = h.request((url), "GET")
