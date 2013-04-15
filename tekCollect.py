@@ -5,7 +5,7 @@ This is tekCollect! This tool will scrape specified data types out of a URL or f
 @TekDefense
 Ian Ahl | www.TekDefense.com | 1aN0rmus@tekDefense.com
 *Some of the Regular Expressions were taken from http://gskinner.com/RegExr/
-Version: 0.4.3
+Version: 0.4.4
 
 Changelog:
 .4
@@ -46,7 +46,7 @@ args = parser.parse_args()
 # Setting some variables and lists 
 regVal = ''    # Initial revVal
 listResults = []
-MD5 = '[a-fA-F0-9]{32}'
+MD5 = '\W([a-fA-F0-9]{32})\W'
 SHA1 = '[a-fA-F0-9]{40}'
 SHA256 = '[a-fA-F0-9]{64}'
 LM = '[a-fA-F0-9]{32}'
