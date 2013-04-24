@@ -12,7 +12,7 @@ Changelog:
 [+] Fixed issue where -t IP4 returned URLs
 [+] Added summary functions that shows what types of data are in a specified target.
 [+] Modified the regex for many of the data types for better results
-[+] Added several new data types: zip, twitter, doc, exe, MYSQL hash, Wordpress (WP) hash, IMG
+[+] Added several new data types: zip, twitter, doc, exe, MYSQL hash, Wordpress (WP) hash, IMG, FLASH
 [+] Modified the way summary is displayed
 [+] several improvements by machn1k (https://github.com/machn1k, http://twitter.com/machn1k)
 [+] Made some modifications based on machn1k's changes
@@ -64,6 +64,7 @@ DOC = '\W([\w-]+\.)(docx|doc|csv|pdf|xlsx|xls|rtf|txt|pptx|ppt)'
 EXE = '\W([\w-]+\.)(exe|dll)'
 ZIP = '\W([\w-]+\.)(zip|zipx|7z|rar|tar|gz)'
 IMG = '\W([\w-]+\.)(jpeg|jpg|gif|png|tiff|bmp)'
+FLASH = '\W([\w-]+\.)(flv|swf)'
 MYSQL = '\*[a-fA-F0-9]{40}'
 WP = '\$P\$\w{31}'
 CISCO5 = ''
@@ -83,7 +84,8 @@ listTypes = [   ('MD5',MD5),
             ('DOC', DOC), 
             ('EXE', EXE), 
             ('ZIP', ZIP), 
-            ('IMG', IMG), 
+            ('IMG', IMG),
+            ('FLASH', FLASH), 
             ('SSN', SSN), 
             ('CCN',CCN)]
 
