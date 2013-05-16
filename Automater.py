@@ -18,6 +18,8 @@ Version 1.2.3
 '''
 '''
 Changelog:
+1.2.4
+[+] Modifed Robtex data pull to match sites new formatting
 1.2.3
 [+] Added HTTP Proxy support. Will pull OS default proxy settings.
 [+] Modified some variables for consistency 
@@ -121,8 +123,8 @@ def robtex(ipInput):
     response = opener.open("http://robtex.com/" + ipInput)
     content = response.read()
     contentString = str(content)
-
-    rpd = re.compile('href\=\"\/\/.+\.robtex\.com\/(.+).html\"\s+\>.+\<\/a\>\s\<\/span\>\<\/td\>\n\<td\sclass\="\w+\"\scolspan\="\d*\"\>a', re.IGNORECASE)
+    print contentString
+    rpd = re.compile('host\.robtex\.com.+\s\>(.+)\<\/a\>', re.IGNORECASE)
     rpdFind = re.findall(rpd,contentString)
     
     rpdSorted=sorted(rpdFind)
