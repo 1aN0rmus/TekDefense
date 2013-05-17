@@ -14,12 +14,13 @@ Welcome to Automater! I have created this tool to help analyst investigate IP Ad
 Web Tools used are: IPvoid.com, Robtex.com, Fortiguard.com, unshorten.me, Urlvoid.com, Labs.alienvault.com
 www.TekDefense.com
 @author: 1aN0rmus@TekDefense.com, Ian Ahl, @TekDefense
-Version 1.2.3
+Version 1.2.4
 '''
 '''
 Changelog:
 1.2.4
 [+] Modifed Robtex data pull to match sites new formatting
+[+] Added Virustotal search for the hash function
 1.2.3
 [+] Added HTTP Proxy support. Will pull OS default proxy settings.
 [+] Modified some variables for consistency 
@@ -423,6 +424,14 @@ def md5Hash(md5):
     rpd1 = re.compile('Date\sSubmitted.\<\/td\>\<td\>(.{12,25})\<\/td\>')
     rpdFind1 = re.findall(rpd1,contentString1)
 
+    # Connect to virustotal and check if hash is listed 
+    url2 = "https://www.virustotal.com/en/file/" + md5 + '/analysis/'
+    response2 = opener.open(url2)
+    content2 = response2.read()
+    contentString2 = str(content2)
+    rpd2 = re.compile('(\d{4}\-\d{2}\-\d{1,2}\s.+UTC)\s\-\sVirusTotal')
+    rpdFind2 = re.findall(rpd2,contentString2)
+
     # Connect to vxvault and check if hash is listed 
     url3 = "http://vxvault.siri-urz.net/ViriList.php?MD5=" + md5
     response3 = opener.open(url3)
@@ -440,7 +449,12 @@ def md5Hash(md5):
     if rpdFind1:
         print ('[+] MD5 last scanned on ' + str(rpdFind1)[2:-2] + ' at ' + url1)
     else:
-        print ('[-] MD5 Not Found on Minotaur')     
+        print ('[-] MD5 Not Found on Minotaur')    
+    
+    if rpdFind2:
+        print ('[+] MD5 last scanned on ' + str(rpdFind2)[2:-2] + ' at ' + url2)
+    else:
+        print ('[-] MD5 Not Found on VirusTotal')   
     
     if rpdFind3:
         print ('[+] MD5 last scanned on ' + str(rpdFind3[0]) + ' at ' + url3)
