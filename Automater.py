@@ -11,7 +11,7 @@ print '''
 \_| |_/\__,_|\__\___/|_| |_| |_|\__,_|\__\___|_|   
 
 Welcome to Automater! I have created this tool to help analyst investigate IP Addresses and URLs with the common web based tools.  All activity is passive so it will not alert attackers.
-Web Tools used are: IPvoid.com, Robtex.com, Fortiguard.com, unshorten.me, Urlvoid.com, Labs.alienvault.com
+Web Tools used are: IPvoid.com, Robtex.com, Fortiguard.com, unshorten.me, Urlvoid.com, Labs.alienvault.com, VirusTotal.com, ThreatExpert, VxVault, Minotaur
 www.TekDefense.com
 @author: 1aN0rmus@TekDefense.com, Ian Ahl, @TekDefense
 Version 1.2.4
@@ -124,7 +124,6 @@ def robtex(ipInput):
     response = opener.open("http://robtex.com/" + ipInput)
     content = response.read()
     contentString = str(content)
-    print contentString
     rpd = re.compile('host\.robtex\.com.+\s\>(.+)\<\/a\>', re.IGNORECASE)
     rpdFind = re.findall(rpd,contentString)
     
