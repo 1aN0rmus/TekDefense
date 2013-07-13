@@ -5,9 +5,12 @@ This is tekCollect! This tool will scrape specified data types out of a URL or f
 @TekDefense
 Ian Ahl | www.TekDefense.com | 1aN0rmus@tekDefense.com
 *Some of the Regular Expressions were taken from http://gskinner.com/RegExr/
-Version: 0.4.4
+Version: 0.5
 
 Changelog:
+.5
+[+] Quick update to add the WDIR Regex. This will pull Windows directories.
+[+] Modified the URL regext to be less strict.
 .4
 [+] Fixed issue where -t IP4 returned URLs
 [+] Added summary functions that shows what types of data are in a specified target.
@@ -51,7 +54,7 @@ SHA1 = '[a-fA-F0-9]{40}'
 SHA256 = '[a-fA-F0-9]{64}'
 LM = '[a-fA-F0-9]{32}'
 DOMAIN = '\W(\w+\.){1,4}(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)[^a-fA-F0-9_-]'
-URL = '(http\:\/\/|https\:\/\/)([a-zA-Z0-9-]+\.)(com|net|biz|cat|aero|asia|coop|info|int|jobs|mobi|museum|name|org|post|pre|tel|travel|xxx|edu|gov|mil|br|cc|ca|uk|ch|co|cx|de|fr|hk|jp|kr|nl|nr|ru|tk|ws|tw)\W'
+URL = '(http\:\/\/|https\:\/\/)(.+\S)'
 IP4 = '((?<![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9]))'
 IP6 = '(((([01]? d?\\d)|(2[0-5]{2}))\\.){3}(([01]?\\d?\\d)|(2[0-5]{2})))|(([A-F0-9]){4}(:|::)){1,7}(([A-F0-9]){4})'
 SSN = '(\d{3}\-\d{2}\-\d{3})|(\d{3}\s\d{2}\s\d{3})'
@@ -60,6 +63,7 @@ CCN = '\d{4}\s\d{4}\s\d{4}\s\d{2,4}|\d{4}\-\d{4}\-\d{4}\-\d{2,4}'
 TWITTER = '(?<=^|(?<=[^a-zA-Z0-9-_\.]))(@)([A-Za-z]+[A-Za-z0-9]+)'
 PHONE = ''
 NTLM = ''
+WDIR = '[a-zA-Z]\:\\\\.+'
 DOC = '\W([\w-]+\.)(docx|doc|csv|pdf|xlsx|xls|rtf|txt|pptx|ppt)'
 EXE = '\W([\w-]+\.)(exe|dll)'
 ZIP = '\W([\w-]+\.)(zip|zipx|7z|rar|tar|gz)'
@@ -85,7 +89,8 @@ listTypes = [   ('MD5',MD5),
             ('EXE', EXE), 
             ('ZIP', ZIP), 
             ('IMG', IMG),
-            ('FLASH', FLASH), 
+            ('FLASH', FLASH),
+            ('WDIR', WDIR),  
             ('SSN', SSN), 
             ('CCN',CCN)]
 
@@ -136,7 +141,7 @@ if args.file:
             listResults = list(set(listResults)) 
             for k in listResults:
                 ''.join(k) 
-            print '[+]' + i[0] + ': ' + str(len(listResults))
+            print '[+] ' + i[0] + ': ' + str(len(listResults))
         sys.exit()  
     else:
         iFile = args.file
