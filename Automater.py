@@ -14,10 +14,12 @@ Welcome to Automater! I have created this tool to help analyst investigate IP Ad
 Web Tools used are: IPvoid.com, Robtex.com, Fortiguard.com, unshorten.me, Urlvoid.com, Labs.alienvault.com, VirusTotal.com, ThreatExpert, VxVault, Minotaur
 www.TekDefense.com
 @author: 1aN0rmus@TekDefense.com, Ian Ahl, @TekDefense
-Version 1.2.4
+Version 1.2.5
 '''
 '''
 Changelog:
+1.2.5
+[+] Modified alienvault module
 1.2.4
 [+] Modifed Robtex data pull to match sites new formatting
 [+] Added Virustotal search for the hash function
@@ -394,7 +396,7 @@ def alienvault(ipInput):
     content = response.read()
     contentString = str(content)
     
-    rpd = re.compile('.*IP not found.*')
+    rpd = re.compile('.*IP Address Can Not be Located*')
     rpdFind = re.findall(rpd,contentString)
 
     if not rpdFind:
